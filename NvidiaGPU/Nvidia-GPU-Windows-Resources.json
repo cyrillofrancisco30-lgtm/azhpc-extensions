@@ -219,8 +219,7 @@
                             },
                             "Drivers": [
                                 {                                    
-                                    "DirLink": "https://download.microsoft.com/download/f7ca3c43-8f24-4365-a4cc-d528574858a8/573.96_grid_win10_win11_server2022_server2025_dch_64bit_international_azure_swl.exe",
-                                    "FwLink": "https://go.microsoft.com/fwlink/?linkid=874181"
+                                    "DirLink": "https://download.microsoft.com/download/f7ca3c43-8f24-4365-a4cc-d528574858a8/573.96_grid_win10_win11_server2022_server2025_dch_64bit_international_azure_swl.exe"
                                 }
                             ]
                         },
@@ -266,8 +265,7 @@
                             },
                             "Drivers": [
                                 {
-                                    "DirLink": "https://download.microsoft.com/download/169e58c8-9099-481e-a9a9-c237a189710c/595.97_grid_win10_win11_server2022_server2025_dch_64bit_international_azure_swl.exe",
-                                    "FwLink": "https://download.microsoft.com/download/169e58c8-9099-481e-a9a9-c237a189710c/595.97_grid_win10_win11_server2022_server2025_dch_64bit_international_azure_swl.exe"
+                                    "DirLink": "https://download.microsoft.com/download/169e58c8-9099-481e-a9a9-c237a189710c/595.97_grid_win10_win11_server2022_server2025_dch_64bit_international_azure_swl.exe"
                                 }
                             ]
                         }
@@ -299,8 +297,7 @@
                                         "Windows Server 2019",
                                         "Windows Server 2016"
                                     ],
-                                    "DirLink": "https://download.microsoft.com/download/8920fc6c-3546-458b-99d9-647c4e8621a4/591.59-data-center-tesla-desktop-win10-win11-64bit-dch-international.exe",
-                                    "FwLink": "https://download.microsoft.com/download/8920fc6c-3546-458b-99d9-647c4e8621a4/591.59-data-center-tesla-desktop-win10-win11-64bit-dch-international.exe"
+                                    "DirLink": "https://download.microsoft.com/download/8920fc6c-3546-458b-99d9-647c4e8621a4/591.59-data-center-tesla-desktop-win10-win11-64bit-dch-international.exe"
                                 }
                             ]
                         }
@@ -318,8 +315,7 @@
             ],
             "Certificate": {
                 "Expiration": "7/26/2018",
-                "DirLink": "https://download.microsoft.com/download/7/1/F/71FB7755-D899-4FD9-AC05-2216EE8102AC/nvidia.cer",
-                "FwLink": "https://go.microsoft.com/fwlink/?linkid=871664"
+                "DirLink": "https://download.microsoft.com/download/7/1/F/71FB7755-D899-4FD9-AC05-2216EE8102AC/nvidia.cer"
             }
         }
     ],
@@ -852,8 +848,7 @@
                             },
                             "Drivers": [
                                 {
-                                    "DirLink": "https://download.microsoft.com/download/7/D/2/7D276FE8-93AF-446E-8B0D-0B9EA5700255/391.03_grid_win10_server2016_64bit_international.exe",
-                                    "FwLink": "https://go.microsoft.com/fwlink/?linkid=874799"
+                                    "DirLink": "https://download.microsoft.com/download/7/D/2/7D276FE8-93AF-446E-8B0D-0B9EA5700255/391.03_grid_win10_server2016_64bit_international.exe"
                                 }
                             ]
                         }
@@ -886,8 +881,7 @@
                                         "Windows Server 2019",
                                         "Windows Server 2016"
                                     ],
-                                    "DirLink": "https://download.microsoft.com/download/fb39e9e2-c1ac-4a8a-a6f9-1221c1ac840d/560.94-data-center-tesla-desktop-winserver-2022-dch-international.exe",
-                                    "FwLink": "https://go.microsoft.com/fwlink/?linkid=874179"
+                                    "DirLink": "https://download.microsoft.com/download/fb39e9e2-c1ac-4a8a-a6f9-1221c1ac840d/560.94-data-center-tesla-desktop-winserver-2022-dch-international.exe"
                                 }
                             ]
                         },
