@@ -587,7 +587,6 @@
                             "Drivers": [
                                 {
                                     "SupportedOSVersions": [
-                                        "Windows Server 2012 R2",
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
@@ -608,7 +607,6 @@
                             "Drivers": [
                                 {
                                     "SupportedOSVersions": [
-                                        "Windows Server 2012 R2",
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
@@ -629,7 +627,6 @@
                             "Drivers": [
                                 {
                                     "SupportedOSVersions": [
-                                        "Windows Server 2012 R2",
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
@@ -649,7 +646,6 @@
                             "Drivers": [
                                 {
                                     "SupportedOSVersions": [
-                                        "Windows Server 2012 R2",
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
@@ -669,7 +665,6 @@
                             "Drivers": [
                                 {
                                     "SupportedOSVersions": [
-                                        "Windows Server 2012 R2",
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
