@@ -56,7 +56,7 @@
                 "DefaultCategory": "GRID",
                 "DefaultDriverVersion": "573.96",
                 "DefaultDrivervGPUVersion": "18.6",
-                "SupportedGridDriverVersions": ["538.46"],
+                "SupportedGridDriverVersions": ["538.46", "573.96"],
                 "RegionSupport" : "RegionControl",
                 "RegionControl": {
                     "centraluseuap":        "573.96",
@@ -120,7 +120,7 @@
                 "DefaultCategory": "GRID",
                 "DefaultDriverVersion": "595.97",
                 "DefaultDrivervGPUVersion": "20.0",
-                "SupportedGridDriverVersions": ["573.96" , "595.97"],
+                "SupportedGridDriverVersions": ["595.97"],
                 "RegionSupport" : "RegionControl",
                 "RegionControl": {
                     "centraluseuap":        "595.97",
@@ -201,9 +201,7 @@
                                         "Windows 11 22H2",
                                         "Windows 10 22H2",
                                         "Windows Server 2022",
-                                        "Windows Server 2025",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2025"
                                     ]
                                 },
                                 "NVadsA10_v5 series": {
@@ -215,9 +213,7 @@
                                         "Windows 11 22H2",
                                         "Windows 10 22H2",
                                         "Windows Server 2022",
-                                        "Windows Server 2025",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2025"
                                     ]
                                 }
                             },
@@ -241,9 +237,7 @@
                                         "Windows 11 22H2",
                                         "Windows 10 22H2",
                                         "Windows Server 2022",
-                                        "Windows Server 2025",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2025"
                                     ]
                                 },
                                 "NVadsA10_v5 series": {
@@ -255,9 +249,7 @@
                                         "Windows 11 22H2",
                                         "Windows 10 22H2",
                                         "Windows Server 2022",
-                                        "Windows Server 2025",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2025"
                                     ]
                                 },
                                 "NCRTXPRO6000BSE_v6 series": {
@@ -268,9 +260,7 @@
                                         "Windows 11 23H2",
                                         "Windows 11 22H2",
                                         "Windows 10 22H2",
-                                        "Windows Server 2025",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2025"
                                     ]
                                 }
                             },
@@ -307,9 +297,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/8920fc6c-3546-458b-99d9-647c4e8621a4/591.59-data-center-tesla-desktop-win10-win11-64bit-dch-international.exe",
                                     "FwLink": "https://download.microsoft.com/download/8920fc6c-3546-458b-99d9-647c4e8621a4/591.59-data-center-tesla-desktop-win10-win11-64bit-dch-international.exe"
@@ -359,9 +347,7 @@
                                         "Windows 11 21H2",
                                         "Windows 10 22H2",
                                         "Windows 10 21H2",
-                                        "Windows Server 2022",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2022"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/dcf4d002-3a53-469d-91af-04bddf57a9d7/573.76_grid_win10_win11_server2019_server2022_server2025_dch_64bit_international_azure_swl.exe"
                                 }
@@ -383,9 +369,7 @@
                                         "Windows 11 21H2",
                                         "Windows 10 22H2",
                                         "Windows 10 21H2",
-                                        "Windows Server 2022",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2022"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/1/1/d/11dd7071-c632-4a83-b950-d5eb3fdcf587/553.62_grid_win10_win11_server2019_server2022_dch_64bit_international_azure_swl.exe"
                                 }
@@ -406,9 +390,7 @@
                                         "Windows 11 21H2",
                                         "Windows 10 22H2",
                                         "Windows 10 21H2",
-                                        "Windows Server 2022",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2022"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/a/f/b/afb81f21-5165-4a87-bdbe-bb68a70b6259/553.24_grid_win10_win11_server2022_dch_64bit_international_azure_swl.exe"
                                 }
@@ -430,9 +412,7 @@
                                         "Windows 11 21H2",
                                         "Windows 10 22H2",
                                         "Windows 10 21H2",
-                                        "Windows Server 2022",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2022"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/e/1/7/e170f423-219c-467f-80f6-260caaebb148/552.74_grid_win10_win11_server2022_dch_64bit_international_azure_swl.exe"
                                 }
@@ -456,9 +436,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/a/3/1/a3186ac9-1f9f-4351-a8e7-b5b34ea4e4ea/538.46_grid_win10_win11_server2019_server2022_dch_64bit_international_azure_swl.exe"
                                 }
@@ -478,9 +456,7 @@
                                         "Windows Server 2019",
                                         "Windows Server 2022",
                                         "Windows 10 22H2",
-                                        "Windows 11 22H2",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 11 22H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/c/b/0/cb00d90e-5786-4882-89cd-75fb17fa787d/538.15_grid_win10_win11_server2019_server2022_dch_64bit_international_azure_swl.exe"
                                 }
@@ -500,9 +476,7 @@
                                         "Windows Server 2019",
                                         "Windows Server 2022",
                                         "Windows 10 22H2",
-                                        "Windows 11 22H2",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 11 22H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/9/d/6/9d6f3611-ff0c-43bc-8958-fe7fb0ded78d/537.13_grid_win10_win11_server2019_server2022_dch_64bit_international_azure_swl.exe"
                                 }
@@ -541,8 +515,7 @@
                                     "SupportedOSVersions": [
                                         "Windows Server 2019",
                                         "Windows Server 2022",
-                                        "Windows 10 22H2",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 22H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/2/5/a/25ad21ca-ed89-41b4-935f-73023ef6c5af/528.89_grid_win10_win11_server2019_server2022_dch_64bit_international_Azure_swl.exe"
                                 }
@@ -561,8 +534,7 @@
                                     "SupportedOSVersions": [
                                         "Windows Server 2019",
                                         "Windows Server 2022",
-                                        "Windows 10 22H2",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 22H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/f/a/f/fafa2972-4975-482e-99e6-442d5ad864a1/528.24_grid_win10_win11_server2019_server2022_dch_64bit_international-Azure-swl.exe"
                                 }
@@ -581,8 +553,7 @@
                                     "SupportedOSVersions": [
                                         "Windows Server 2019",
                                         "Windows Server 2022",
-                                        "Windows 10 22H2",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 22H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/4/6/0/4605339d-133c-4b7b-a750-90352df79aa6/527.41_grid_win10_win11_server2019_server2022_dch_64bit_international_azure_swl.exe"
                                 }
@@ -600,8 +571,7 @@
                                     "SupportedOSVersions": [
                                         "Windows Server 2016",
                                         "Windows Server 2019",
-                                        "Windows 10 22H2",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 22H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/7/3/6/7361d1b9-08c8-4571-87aa-18cf671e71a0/512.78_grid_win10_win11_server2016_server2019_server2022_64bit_azure_swl.exe"
                                 }
@@ -622,8 +592,7 @@
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
                                         "Windows Server 2022",
-                                        "Windows 10 21H2",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 21H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/3/2/2/322f99aa-57f3-4539-b5fc-718f8c0e2579/472.39_grid_win11_win10_64bit_Azure-SWL.exe"
                                 }
@@ -644,8 +613,7 @@
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
                                         "Windows Server 2022",
-                                        "Windows 10 21H2",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 21H2"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/f/0/1/f0121609-68b4-48af-8426-ef454d4d2376/471.68_grid_win10_server2016_server2019_server-azure-swl.exe"
                                 }
@@ -665,8 +633,7 @@
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
-                                        "Windows 10 21H1",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 21H1"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/0/0/1/001f0edf-d852-4297-9cb7-10b31b1abf45/462.31_grid_win10_server2016_server2019_64bit_azure_swl.exe"
                                 }
@@ -686,8 +653,7 @@
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
-                                        "Windows 10 21H1",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 21H1"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/9/7/e/97e1be73-d24b-410b-9c08-cc98c7becfa3/461.33_grid_win10_server2016_server2019_64bit_azure_swl.exe"
                                 }
@@ -707,8 +673,7 @@
                                         "Windows Server 2016 1607",
                                         "Windows Server 2016 1709",
                                         "Windows Server 2019",
-                                        "Windows 10 21H1",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows 10 21H1"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/4/8/d/48d2d45b-bebc-44ad-9c58-e0b79a9d4ff2/461.09_grid_win10_server2016_server2019_64bit_azure_swl.exe"
                                 }
@@ -924,9 +889,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/fb39e9e2-c1ac-4a8a-a6f9-1221c1ac840d/560.94-data-center-tesla-desktop-winserver-2022-dch-international.exe",
                                     "FwLink": "https://go.microsoft.com/fwlink/?linkid=874179"
@@ -952,9 +915,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/a/c/8/ac8f92af-8a95-41ee-aa64-a44d694ebbe6/529.19-data-center-tesla-desktop-winserver-2016-2019-2022-dch-international.exe"
                                 }
@@ -980,9 +941,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/a/c/a/aca6122c-3565-4f55-9d4d-56a1cecc6ba6/473.47-data-center-tesla-desktop-winserver-2019-2016-international.exe"
                                 }
@@ -1008,9 +967,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/6/1/0/6102ece3-39ae-4a95-93c1-e76db97c4ed3/Tesla_Windows_451_82.exe"
                                 }
@@ -1036,9 +993,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/C/F/3/CF3A81B4-9279-45DA-92D0-AF698537E917/398.75-tesla-desktop-winserver2016-international.exe"
                                 }
@@ -1064,9 +1019,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/2/2/4/224C672F-1AD7-46CF-A4B2-1E7EEAD87F05/397.44-tesla-desktop-winserver2016-international.exe"
                                 }
@@ -1092,9 +1045,7 @@
                                         "Windows 10 21H2",
                                         "Windows Server 2022",
                                         "Windows Server 2019",
-                                        "Windows Server 2016",
-                                        "Windows 11 Enterprise multi-session",
-                                        "Windows 10 Enterprise multi-session"
+                                        "Windows Server 2016"
                                     ],
                                     "DirLink": "https://download.microsoft.com/download/D/8/4/D846AE1E-6565-4EC7-9C99-45FC839A7659/390.85-tesla-desktop-winserver2016-international.exe"
                                 }
