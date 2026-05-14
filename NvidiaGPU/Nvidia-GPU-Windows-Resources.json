@@ -23,6 +23,7 @@
                 "DefaultDriverVersion": "591.59", 
                 "RegionSupport": "DefaultAllRegions",
                 "GridDriverSupported" : true,
+                "DefaultGridDriverVersion" : "573.96",
                 "SupportedGridDriverVersions": ["538.46", "573.96" , "595.97"],
                 "Comment": "We install CUDA drivers by default using the extension. \n If the user wants to install GRID driver, can do so by passing runtime settings. Runtime settings can be provided from Azure CLI - (az vm extension set  --resource-group <rg-name> --vm-name <vm-name> --name NvidiaGpuDriverWindows --publisher Microsoft.HpcCompute --settings \"{'installGridNC': True}\""
             },
@@ -259,6 +260,7 @@
                                         "Windows 11 23H2",
                                         "Windows 11 22H2",
                                         "Windows 10 22H2",
+                                        "Windows Server 2022",
                                         "Windows Server 2025"
                                     ]
                                 }
