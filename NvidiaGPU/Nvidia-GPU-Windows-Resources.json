@@ -25,6 +25,13 @@
                 "GridDriverSupported" : true,
                 "DefaultGridDriverVersion" : "573.96",
                 "SupportedGridDriverVersions": ["595.97","573.96", "573.76", "553.24", "552.72","538.46"],
+                "CompatibilityPolicy": {
+                    "OnDefaultOsMismatch": "FallbackByOs",
+                    "OnExplicitOsMismatch": "Fail",
+                    "OsFallbackDriverVersions": {
+                        "Windows Server 2019": ["538.46"]
+                    }
+                },
                 "Comment": "We install CUDA drivers by default using the extension. \n If the user wants to install GRID driver, can do so by passing runtime settings. Runtime settings can be provided from Azure CLI - (az vm extension set  --resource-group <rg-name> --vm-name <vm-name> --name NvidiaGpuDriverWindows --publisher Microsoft.HpcCompute --settings \"{'installGridNC': True}\""
             },
             "NC_H100_v5 series": {
@@ -58,6 +65,13 @@
                 "DefaultDriverVersion": "573.96",
                 "DefaultDrivervGPUVersion": "18.6",
                 "SupportedGridDriverVersions": ["573.96", "573.76", "553.24", "552.72","538.46"],
+                "CompatibilityPolicy": {
+                    "OnDefaultOsMismatch": "FallbackByOs",
+                    "OnExplicitOsMismatch": "Fail",
+                    "OsFallbackDriverVersions": {
+                        "Windows Server 2019": ["538.46"]
+                    }
+                },
                 "RegionSupport" : "RegionControl",
                 "RegionControl": {
                     "centraluseuap":        "573.96",
