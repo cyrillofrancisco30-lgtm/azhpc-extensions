@@ -132,13 +132,16 @@
               },
               {
                 "SupportedOSVersions": [
-                  "Windows 10 Enterprise multi-session 22H2"
+                  "Windows Server 2019",
+                  "Windows 10 Enterprise multi-session 22H2",
+                  "Windows 10 Enterprise multi-session 21H2"
                 ],
-                "DirLink": "https://download.microsoft.com/download/8eb8c91e-6c08-4c76-99a9-042bb84a7e86/v710-winsvr2022.exe",
-                "FwLink": "https://download.microsoft.com/download/8eb8c91e-6c08-4c76-99a9-042bb84a7e86/v710-winsvr2022.exe",
+                "DriverVersion": "24Q2",
+                "DirLink": "https://download.microsoft.com/download/d/0/5/d057db57-bde0-4836-8a43-afe8f640d7b3/AMD-Software-Cloud-Edition-24.Q2-WinSvr2019-Azure-V710.exe",
+                "FwLink": "https://go.microsoft.com/fwlink/?linkid=2292402",
                 "DriverPath": "AMD\\AMD-Software-Installer\\Packages\\Drivers\\Display\\WT6A_INF\\*.inf",
-                "DriverFileSize": 679320904
-              },
+                "DriverFileSize": 641433976
+              }
               {
                 "SupportedOSVersions": [
                   "Windows Server 2025"
