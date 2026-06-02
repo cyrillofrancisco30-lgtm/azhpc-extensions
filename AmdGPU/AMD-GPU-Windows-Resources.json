@@ -141,7 +141,7 @@
                 "FwLink": "https://go.microsoft.com/fwlink/?linkid=2292402",
                 "DriverPath": "AMD\\AMD-Software-Installer\\Packages\\Drivers\\Display\\WT6A_INF\\*.inf",
                 "DriverFileSize": 641433976
-              }
+              },
               {
                 "SupportedOSVersions": [
                   "Windows Server 2025"
