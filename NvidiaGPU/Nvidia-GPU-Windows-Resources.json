@@ -57,6 +57,7 @@
                 "DefaultCategory":"GRID", 
                 "DefaultDriverVersion": "538.46", 
                 "DefaultDrivervGPUVersion": "16.5",
+                "SupportedGridDriverVersions":["538.46"],
                 "RegionSupport": "DefaultAllRegions"
             },
             "NVadsA10_v5 series": {
@@ -446,6 +447,8 @@
                             "Drivers": [
                                 {
                                     "SupportedOSVersions": [
+                                        "Windows 11 25H2",
+                                        "Windows 11 24H2",
                                         "Windows 11 23H2",
                                         "Windows 11 22H2",
                                         "Windows 11 21H2",
