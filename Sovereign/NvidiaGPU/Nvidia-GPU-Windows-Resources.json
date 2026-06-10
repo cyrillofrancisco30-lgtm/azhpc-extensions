@@ -57,6 +57,7 @@
                 "DefaultCategory":"GRID", 
                 "DefaultDriverVersion": "538.46", 
                 "DefaultDrivervGPUVersion": "16.5",
+                "SupportedGridDriverVersions":["538.46"],
                 "RegionSupport": "DefaultAllRegions"
             },
             "NVadsA10_v5 series": {
