@@ -74,7 +74,6 @@
                     }
                 },
                 "RegionSupport": "DefaultAllRegions"
-                }
             },
             "NCRTXPRO6000BSE_v6 series": {
                 "GpuModel": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
