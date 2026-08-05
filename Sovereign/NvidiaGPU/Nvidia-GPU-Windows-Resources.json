@@ -23,8 +23,8 @@
                 "DefaultDriverVersion": "591.59", 
                 "RegionSupport": "DefaultAllRegions",
                 "GridDriverSupported" : true,
-                "DefaultGridDriverVersion" : "573.96",
-                "SupportedGridDriverVersions": ["595.97","573.96", "573.76", "553.24", "552.72","538.46"],
+                "DefaultGridDriverVersion" : "574.24",
+                "SupportedGridDriverVersions": ["595.97","574.24","573.96", "573.76", "553.24", "552.72","538.46"],
                 "CompatibilityPolicy": {
                     "OnDefaultOsMismatch": "FallbackByOs",
                     "OnExplicitOsMismatch": "Fail",
@@ -63,9 +63,9 @@
             "NVadsA10_v5 series": {
                 "GpuModel": "NVIDIA A10",
                 "DefaultCategory": "GRID",
-                "DefaultDriverVersion": "573.96",
-                "DefaultDrivervGPUVersion": "18.6",
-                "SupportedGridDriverVersions": ["573.96", "573.76", "553.24", "552.72","538.46"],
+                "DefaultDriverVersion": "574.24",
+                "DefaultDrivervGPUVersion": "18.8",
+                "SupportedGridDriverVersions": ["574.24","573.96", "573.76", "553.24", "552.72","538.46"],
                 "CompatibilityPolicy": {
                     "OnDefaultOsMismatch": "FallbackByOs",
                     "OnExplicitOsMismatch": "Fail",
@@ -93,8 +93,8 @@
                     "Name": "GRID",
                     "Versions": [
                         {
-                            "DriverVersion": "573.96",
-                            "vGPUVersion": "18.6",
+                            "DriverVersion": "574.24",
+                            "vGPUVersion": "18.8",
                             "SupportedVmFamilyAndGPUModel": {
                                 "NCasT4_v3 series": {
                                     "GpuModel": "Nvidia Tesla T4",
@@ -123,7 +123,7 @@
                             },
                             "Drivers": [
                                 {                                    
-                                    "DirLink": "https://download.microsoft.com/download/f7ca3c43-8f24-4365-a4cc-d528574858a8/573.96_grid_win10_win11_server2022_server2025_dch_64bit_international_azure_swl.exe"
+                                    "DirLink": "https://download.microsoft.com/download/e9a86343-1981-4ac8-883a-49bf5e2c4d18/574.24_grid_win10_win11_server2022_dch_server2025_64bit_international_azure_swl.exe"
                                 }
                             ]
                         },
@@ -231,6 +231,41 @@
                 {
                     "Name": "GRID",
                     "Versions": [
+                        {
+                            "DriverVersion": "573.96",
+                            "vGPUVersion": "18.6",
+                            "SupportedVmFamilyAndGPUModel": {
+                                "NCasT4_v3 series": {
+                                    "GpuModel": "Nvidia Tesla T4",
+                                    "SupportedOSVersions": [
+                                        "Windows 11 25H2",
+                                        "Windows 11 24H2",
+                                        "Windows 11 23H2",
+                                        "Windows 11 22H2",
+                                        "Windows 10 22H2",
+                                        "Windows Server 2022",
+                                        "Windows Server 2025"
+                                    ]
+                                },
+                                "NVadsA10_v5 series": {
+                                    "GpuModel": "NVIDIA A10",
+                                    "SupportedOSVersions": [
+                                        "Windows 11 25H2",
+                                        "Windows 11 24H2",
+                                        "Windows 11 23H2",
+                                        "Windows 11 22H2",
+                                        "Windows 10 22H2",
+                                        "Windows Server 2022",
+                                        "Windows Server 2025"
+                                    ]
+                                }
+                            },
+                            "Drivers": [
+                                {                                    
+                                    "DirLink": "https://download.microsoft.com/download/f7ca3c43-8f24-4365-a4cc-d528574858a8/573.96_grid_win10_win11_server2022_server2025_dch_64bit_international_azure_swl.exe"
+                                }
+                            ]
+                        },
                         {
                             "DriverVersion": "573.76",
                             "vGPUVersion": "18.5",
