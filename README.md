@@ -78,20 +78,7 @@ TRUST ASSERTION
 14  Run Integrity Validator
 15  Run Provenance Validator
 16  Run Quality Validator
-17  Run Policy Validator
-18  Run Governance Validator
-19  Derive State
-20  Compare Expected State
-21  Calculate Determinism Checksum
-22  Produce Verification Result
-23  Optionally Verify Regulatory Attestation
-24  Generate Evidence Report
-25  Canonicalize Report
-26  Calculate Report Hash
-27  Publish to IPFS
-28  Obtain CID
-29  Anchor CID/report hash in Ledger
----
+
 
 ## 2. Core do contrato (JSON‑Schema)
 
