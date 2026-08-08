@@ -66,7 +66,35 @@ VERIFICATION ENGINE
 TRUST ASSERTION
 
 
-
+01  Load Contract
+02  Validate Schema
+03  Resolve public_key_ref
+04  Resolve Trust Anchor
+05  Validate Key Fingerprint
+06  Validate Temporal Window
+07  Construct Canonical Signature Payload
+08  Verify ECDSA-P256
+09  Retrieve Dataset/Pipeline
+10  Apply Declared Canonicalization
+11  Recalculate Evidence Hashes
+12  Compare Expected Hashes
+13  Reconstruct EVG
+14  Run Integrity Validator
+15  Run Provenance Validator
+16  Run Quality Validator
+17  Run Policy Validator
+18  Run Governance Validator
+19  Derive State
+20  Compare Expected State
+21  Calculate Determinism Checksum
+22  Produce Verification Result
+23  Optionally Verify Regulatory Attestation
+24  Generate Evidence Report
+25  Canonicalize Report
+26  Calculate Report Hash
+27  Publish to IPFS
+28  Obtain CID
+29  Anchor CID/report hash in Ledger
 ---
 
 ## 2. Core do contrato (JSON‑Schema)
@@ -1170,54 +1198,4 @@ Com esses ajustes o pipeline mantém a **cadeia de confiança completa**, distin
 
 | Código | Significado |
 |--------|-------------|
-| `TRUSTED` | assinatura → âncora → hashes → validators → derived_state coincide com expected.state. |
-| `UNTRUSTED` | tudo válido mas derived_state ≠ expected.state. |
-| `REPLAY_MISMATCH` | falha em assinatura, validade da âncora ou hash dos artefatos. |
-| `REGULATORY_SIGNATURE_VERIFIED` | relatório assinado por autoridade reconhecida e assinatura válida. |
-| `REGULATORY_SIGNATURE_INVALID` | a assinatura regulatória está presente mas falha na verificação. |
-
----
-
-## 5️⃣ Caminho de maturidade (níveis)
-
-```
-DESIGNED          → contrato/schema definido
-IMPLEMENTED       → código que implementa todas as etapas acima
-TESTED            → suíte unitária cobre cada verificador
-EXECUTED          → contrato real executado, gera result
-CRYPTOGRAPHICALLY VERIFIED → todas as assinaturas, hashes e âncoras confirmadas
-INDEPENDENTLY REPLAYED → outro agente reproduz exatamente o mesmo result
-IMMUTABLY ANCHORED → evidence_report.json publicado em IPFS + registro em ledger
-```
-
-Quando o CI exibe **todos** esses estágios com sucesso, o repositório pode ser marcado como **Verified Governance Evidence** (nível 4). A presença de um `regulatory_signature` verificado eleva o artefato a **Regulatory Certification**, mas apenas se o verificador relatar explicitamente o estado `REGULATORY_SIGNATURE_VERIFIED`.
-
----
-
-## 6️⃣ Próximos passos de entrega
-
-| Etapa | Ação concreta |
-|------|----------------|
-|**Schema**|Commit `schema‑v1.2` com o modelo acima; atualizar `tests/test_schema.py`. |
-|**Anchor resolver**|Implementar `fetch_anchor_key(ref: str) → bytes` (pode usar um diretório local `anchors/`). |
-|**Hash dispatcher**|Na `EvidenceVerifier` detectar `Content-Type` ou extensão; aplicar JCS ou hash bruto conforme tabela. |
-|**Determinism checksum**|Nova função `contract_deterministic_hash(contract: dict) → str`. |
-|**Regulatory layer**|Criar módulo `regulatory/validator.py` que aceita `regulatory_signature` e produz os dois novos estados. |
-|**CI**|Adicionar jobs que geram um *real* artefato binário (ex.: ZIP) e verificam a rota binária; incluir testes de `regulatory_signature`. |
-|**Documentation**|Atualizar `README.md` com o diagrama de confiança e a tabela de estados. |
-|**Release**|Tag `v1.0.0‑beta` após CI verde; publicar artefatos de exemplo (dataset JSON, pipeline zip, relatório IPFS). |
-
----
-
-### Resultado final
-
-Com esses ajustes o fluxo:
-
-```
-REAL ARTIFACTS → JCS → SHA‑256 → ECDSA‑P‑256 → TRUST ANCHOR → SIGNATURE+ANCHOR VERIFIED
-        → EVIDENCE HASH VERIFICATION → EVG → QUALITY → POLICY → PROVENANCE → GOVERNANCE
-        → DETERMINISTIC REPLAY → INDEPENDENT VERIFIER → EVIDENCE REPORT
-        → IPFS → IMMUTABLE LEDGER
-```
-
-torna cada seta **executable** e **independentemente verificável**, eliminando a ambiguidade entre “autenticidade” e “confiança regulatória”. Quando todas as etapas são demonstradas em produção, o XA‑TRUST entrega efetivamente uma **cadeia de evidências criptograficamente verificável**, pronta para auditoria externa.
+| `TRUSTED` | assinatura → âncora → hashes → hash in Ledger
