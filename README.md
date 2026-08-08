@@ -631,4 +631,144 @@ Real Artifacts → Cryptographic Evidence → EVG Reconstruction → Determinist
 
 ### Resultado final esperado
 
-* Um **repositório público** que, ao ser clonado e executado (`python -m src.verifier.verifier path/to/contract.json`), reproduz **deterministicamente** o mesmo `derived_state`, `trust_decision` e `determinism_checksum` que um verificador 
+* Um **repositório público** que, ao ser clonado e executado (`python -m src.verifier.verifier path/to/contract.json`), reproduz **deterministicamente** o mesmo `derived_state`, `trust_decision` e `determinism_checksum` que um verificador
+
+* **Roadmap resumido – de “referência” a “evidência criptográfica verificável”**
+
+---
+
+### 1️⃣ Atualizar o JSON‑Schema (`schema‑v1.1`)
+* **Novos campos**: `schema_version`, `policy_version`, `replay_engine_version`, `hash_schema_version`, `evidence_time`, `trust_anchor_set` (array de `anchor_id`, `valid_from`, `valid_to`, `public_key`).  
+* **Claims** → objeto `{value:string, claimed:boolean}` com `additionalProperties:true`.  
+* `expected.state` → **read‑only** (não usado no cálculo).  
+* Campo opcional `result.replay_version`.  
+* Ajustar caminho do schema em `verifier.py`.  
+* **Teste**: `pytest tests/test_schema.py` aceita contrato completo e rejeita ausência de campos obrigatórios.
+
+---
+
+### 2️⃣ Canonicalização JCS (`canonical‑jcs`)
+* Instalar dependência: `pip install jcs`.  
+* Implementar `src/canonicalization/rfc8785_jcs.py` usando `jcs.canonicalize`.  
+* Substituir todas as chamadas a `json.dumps(..., sort_keys=True, separators=(',', ':'))`.  
+* **Teste**: vetores oficiais IETF (`test_vectors/jcs_vectors.json`).
+
+---
+
+### 3️⃣ Refatorar o Replay Engine (`replay‑engine‑v2`)
+* **Função principal** `deterministic_replay(contract: dict) -> dict` que:
+  1. Valida temporalmente as âncoras (`AnchorValidator`).  
+  2. Verifica hashes de dataset/pipeline (`EvidenceVerifier`).  
+  3. Reconstrói o EVG (`EVGReconstructor`).  
+  4. Executa a cadeia de validações (`ValidatorChain`).  
+  5. Obtém `derived_state`.  
+  6. Compara com `expected.state` → `trust_decision`.  
+  7. Calcula `determinism_checksum` (SHA‑256 do contrato canônico, excluindo `result`).  
+
+* **Módulos novos**: `evidence_verifier`, `anchor_validator`, `evg_reconstructor`, `validator_chain`.
+
+---
+
+### 4️⃣ Verificação de Dataset / Pipeline (`evidence‑hash‑check`)
+* Classe `EvidenceVerifier` com métodos:
+  * `_hash_and_compare(uri, expected_hash, label)` – baixa artefato via `fetch_uri`, canonicaliza (JCS) e compara SHA‑256.  
+  * `verify_dataset()` / `verify_pipeline()` → chamadas internas.  
+  * `run_all()` → verifica dataset, pipeline e, futuramente, qualidade/proveniência.  
+* **Teste**: casos positivos e negativos de mismatches.
+
+---
+
+### 5️⃣ Verificação de assinatura ECDSA‑P‑256 (`ecdsa‑verify`)
+* Função `verify_signature(public_key_pem, payload, signature)`.  
+* **Payload** concatenado: `dataset_hash + pipeline_hash + evidence_time + policy_version` (todos em `bytes`).  
+* **Teste**: assinatura válida → `True`; corrupta → `False`.
+
+---
+
+### 6️⃣ Validação da Âncora temporal (`anchor‑time‑check`)
+* `AnchorValidator.validate(anchors, evidence_time)` garante que `evidence_time` está dentro de **pelo menos** um intervalo `valid_from`/`valid_to`.  
+* Levanta `ValidationError` caso contrário.  
+* **Teste**: tempo dentro, antes e depois da janela.
+
+---
+
+### 7️⃣ CI / GitHub Actions (`ci‑full‑coverage`)
+* Workflow que instala dependências, roda **todos** os testes de schema, canonicalização, hash, evidência, assinatura, âncora e replay.  
+* Cobertura mínima **90 %** nas linhas críticas.
+
+---
+
+### 8️⃣ Teste de determinismo independente (`determinism‑test`)
+* Executa `verifier.verify_contract(contract)` duas vezes em processos separados e verifica que `recomputed` coincide.  
+* Variações de contrato (hash/assinatura alterados) → `status == "MISMATCH"`.
+
+---
+
+### 9️⃣ Checklist de **Prova de Implementação** (nível 3) – todos marcados ✅
+
+| Item | Status |
+|------|--------|
+|Schema alinhado (`schema‑v1.1`) |✅|
+|Canonicalização JCS |✅|
+|Hash SHA‑256 consistente |✅|
+|EVG reconstruction |✅|
+|Validação completa (integrity → governance) |✅|
+|Anchor temporal + public‑key |✅|
+|Assinatura ECDSA‑P‑256 |✅|
+|Replay determinístico (engine_version) |✅|
+|Comparação derived_state / trust_decision / checksum |✅|
+|CI com cobertura total |✅|
+
+Quando o workflow CI passar, o repositório pode ser rotulado como **Reference Implementation of IRV/XA‑TRUST**.
+
+---
+
+### 10️⃣ Evoluir para **Evidência Criptográfica Verificável** (nível 4)
+
+| Etapa | Ação concreta | PR‑title |
+|------|---------------|----------|
+|Armazenamento imutável|Publicar dataset, pipeline e política no **IPFS**; gravar CIDs nos campos `dataset_uri`/`pipeline_uri`.|“Store artifacts on IPFS”|
+|Evidence report|Gerar `evidence_report.json` contendo `contract_hash`, `timestamp`, `engine_sha256`; publicar CID. |“Create immutable evidence report”|
+|Trust anchor oficial|Registrar a chave pública da autoridade em um **DID/VC** ou DNS SEC; incluir `trust_anchor_id`.|“Add authoritative trust anchor”|
+|Assinatura regulatória|Obter assinatura da autoridade sobre `evidence_report` (`regulatory_signature`).|“Add regulatory signature”|
+|Ledger|Inserir o CID do `evidence_report` em um **blockchain** (Bitcoin OP_RETURN, side‑chain, etc.).|“Log evidence report on blockchain”|
+
+Fluxo final:
+
+```
+Real Artifacts → Cryptographic Evidence → EVG Reconstruction → Deterministic Replay
+        ↓                                 ↓                     ↓
+   Evidence Ledger  ←  Verified Governance Artifact  ←  Independent Verifier
+```
+
+---
+
+### 11️⃣ Próximos passos de entrega
+
+1. **Branch `dev`** – implementar itens 1‑8.  
+2. **PR `feature/proof‑implementation`** – revisão e aprovação CI.  
+3. **Merge → `main`**, versionar como `v1.0.0`.  
+4. **Branch `evidence-layer`** – iniciar nível 4 (IPFS, DID, blockchain).  
+5. **Documentar** fluxo completo em `README.md` e `ARCHITECTURE.md` (diagramas de dependência).  
+
+---
+
+### Resultado esperado
+
+* Repositório público **clonável** e executável (`python -m src.verifier.verifier path/to/contract.json`).  
+* Produz **deterministicamente** os mesmos valores de `derived_state`, `trust_decision` e `determinism_checksum` que qualquer verificador independente.  
+* Divergências em hash, assinatura ou janela de validade geram **UNTRUSTED / REPLAY_MISMATCH**.  
+* Ao publicar artefatos em um ledger imutável e obter assinatura regulatória, o contrato passa a ser **Verified Governance Evidence**, pronto para auditoria.
+* A assinatura ECDSA‑P‑256 deve seguir exatamente os passos que você descreveu:
+
+1. **Gerar a chave P‑256** (uma única vez) e guardar o PEM privado e o PEM público.  
+2. **Montar o payload** concatenando, em ordem determinística, `dataset_hash`, `pipeline_hash`, `evidence_time` e `policy_version` (todos como *bytes*).  
+3. **Assinar** o payload com a chave privada usando `ec.ECDSA(hashes.SHA256())`; codificar o resultado em Base64 e prefixá‑lo com `ecdsa:`.  
+4. **Incluir** no contrato um objeto `signature` contendo:
+   * `type`: `"ECDSA-P256"`  
+   * `public_key`: o PEM da chave pública (texto)  
+   * `signature`: a string gerada no passo 3.  
+5. **Verificar** (opcional) com `verify_signature(public_key_pem, payload, signature)`; deve retornar `True`.  
+6. **Salvar** o JSON completo e enviá‑lo ao verificador (`python -m src.verifier.verifier …`).  
+
+Se a assinatura for válida, o replay engine prossegue e produz `derived_state`, `trust_decision` e `determinism_checksum`. Caso a assinatura falhe, o verificador devolve **UNTRUSTED / REPLAY_MISMATCH**.
