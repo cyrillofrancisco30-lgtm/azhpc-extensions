@@ -733,7 +733,7 @@ Quando o workflow CI passar, o repositório pode ser rotulado como **Reference I
 |Assinatura regulatória|Obter assinatura da autoridade sobre `evidence_report` (`regulatory_signature`).|“Add regulatory signature”|
 |Ledger|Inserir o CID do `evidence_report` em um **blockchain** (Bitcoin OP_RETURN, side‑chain, etc.).|“Log evidence report on blockchain”|
 
-Fluxo final:
+
 
 ```
 Real Artifacts → Cryptographic Evidence → EVG Reconstruction → Deterministic Replay
@@ -772,3 +772,421 @@ Real Artifacts → Cryptographic Evidence → EVG Reconstruction → Determinist
 6. **Salvar** o JSON completo e enviá‑lo ao verificador (`python -m src.verifier.verifier …`).  
 
 Se a assinatura for válida, o replay engine prossegue e produz `derived_state`, `trust_decision` e `determinism_checksum`. Caso a assinatura falhe, o verificador devolve **UNTRUSTED / REPLAY_MISMATCH**.
+**Ajustes arquiteturais e de implantação**
+
+---
+
+## 1️⃣ Separar a assinatura da *trust‑anchor*
+
+### Contrato – parte `signature`
+
+```json
+{
+  "signature": {
+    "type": "ECDSA-P256",
+    "public_key_ref": "TA-2025-01",          // id da âncora
+    "signature": "ecdsa:MEUBase64..."
+  }
+}
+```
+
+### `trust_context.trust_anchor_set`
+
+```json
+{
+  "trust_anchor_set": [
+    {
+      "anchor_id": "TA-2025-01",
+      "public_key_hash": "sha256:9f2c…e3a1",   // hash SHA‑256 do PEM da chave pública
+      "valid_from": "2025-01-01T00:00:00Z",
+      "valid_to":   "2027-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+* **Verificador**  
+  1. Resolve `public_key_ref` → busca o registro da âncora.  
+  2. Carrega o PEM da chave pública (por exemplo, de um repositório de âncoras).  
+  3. Calcula `sha256(pem)` e compara com `public_key_hash`.  
+  4. Verifica a validade temporal de `evidence_time` contra `valid_from/valid_to`.  
+  5. Usa a chave pública para validar `signature`.  
+
+---
+
+## 2️⃣ Fluxo de decisão revisado
+
+```
+Assinatura válida
+   ↓
+Âncora válida no evidence_time
+   ↓
+Artefatos recuperáveis (IPFS/URI)
+   ↓
+Hashes recalculados → coincidem?
+   ↓
+Proveniência / Quality / Policy / Governance
+   ↓
+Deterministic Replay → derived_state
+   ↓
+derived_state == expected.state ?
+   ↓
+TRUSTED / UNTRUSTED
+   ↓
+Comparação com stored.result (se houver)
+```
+
+> **Risco eliminado** – a presença de uma assinatura não gera *TRUSTED* por si só; só após a cadeia completa de validações o veredicto pode ser confiável.
+
+---
+
+## 3️⃣ Naming das camadas de maturidade
+
+| Camada | O que demonstra |
+|--------|-----------------|
+| **Artefato + hash** | **Integridade** (SHA‑256 sobre JCS). |
+| **Assinatura + trust‑anchor** | **Autenticidade** e **cadeia de confiança** (ECDSA‑P‑256 → hash da chave → anchor). |
+| **Proveniência + Quality/Policy/Governance** | **Controles efetivamente avaliados** (evidence_verifier + validator_chain). |
+| **Deterministic Replay** | **Reprodutibilidade** (mesmo `determinism_checksum`). |
+| **Independent Verifier** | **Verificação independente** (outro agente roda o mesmo replay). |
+| **Evidence Report** | **Resultado consolidado** (derived_state, trust_decision, checksum, timestamps). |
+| **Immutable Ledger** | **Registro auditável** (CID ou hash em blockchain/DLT). |
+
+---
+
+## 4️⃣ “Verified Governance Evidence” vs. “Regulatory Certification”
+
+* **Verified Governance Evidence** – o relatório foi produzido, assinado pelo sistema XA‑TRUST e validado por todos os passos acima. Não implica aprovação de nenhuma autoridade externa.  
+* **Regulatory Certification** – exige um **segundo assinante** (autoridade regulatória) que ateste o relatório. O contrato deve conter um campo adicional, por exemplo:
+
+```json
+"regulatory_signature": {
+  "authority_id": "REG-CH-2026",
+  "signature": "ecdsa:…"
+}
+```
+
+Somente quando esse campo existir e passar na validação o contrato pode ser chamado de *certificado regulatoriamente*.
+
+---
+
+## 5️⃣ Implementação mínima no código
+
+### `src/signature/ecdsa_verifier.py` (atualizado)
+
+```python
+import base64
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+
+def verify_signature(public_key_pem: bytes, payload: bytes, signature: str) -> bool:
+    pub_key = serialization.load_pem_public_key(public_key_pem)
+    sig_bytes = base64.b64decode(signature.split(":")[1])
+    try:
+        pub_key.verify(sig_bytes, payload, ec.ECDSA(hashes.SHA256()))
+        return True
+    except Exception:
+        return False
+```
+
+### `src/anchor/anchor_validator.py` (nova lógica)
+
+```python
+from hashlib import sha256
+from datetime import datetime
+from src.signature.ecdsa_verifier import verify_signature
+
+class AnchorValidator:
+    @staticmethod
+    def resolve_anchor(anchor_set: list[dict], ref: str) -> dict:
+        for a in anchor_set:
+            if a["anchor_id"] == ref:
+                return a
+        raise ValidationError(f"Anchor {ref} not found")
+
+    @staticmethod
+    def validate(anchors: list[dict], evidence_time: str,
+                 public_key_pem: bytes, payload: bytes, sig: str, ref: str) -> None:
+        # 1 – encontra a âncora
+        anchor = AnchorValidator.resolve_anchor(anchors, ref)
+
+        # 2 – confere hash da chave pública
+        expected_hash = anchor["public_key_hash"].split(":")[1]
+        actual_hash = sha256(public_key_pem).hexdigest()
+        if actual_hash != expected_hash:
+            raise ValidationError("Public key hash mismatch")
+
+        # 3 – valida janela temporal
+        ts = datetime.fromisoformat(evidence_time)
+        if not (datetime.fromisoformat(anchor["valid_from"]) <= ts <=
+                datetime.fromisoformat(anchor["valid_to"])):
+            raise ValidationError("Evidence time outside anchor validity")
+
+        # 4 – verifica assinatura
+        if not verify_signature(public_key_pem, payload, sig):
+            raise ValidationError("Signature verification failed")
+```
+
+### Atualização no `deterministic_replay`
+
+```python
+def deterministic_replay(contract: dict) -> dict:
+    # 1 – montar payload
+    payload = build_payload(contract)
+
+    # 2 – validar assinatura + anchor
+    sig_obj = contract["signature"]
+    anchor_set = contract["trust_context"]["trust_anchor_set"]
+    AnchorValidator.validate(
+        anchors=anchor_set,
+        evidence_time=contract["evidence"]["evidence_time"],
+        public_key_pem=fetch_anchor_key(sig_obj["public_key_ref"]),   # devolve o PEM
+        payload=payload,
+        sig=sig_obj["signature"],
+        ref=sig_obj["public_key_ref"]
+    )
+
+    # 3 – resto do fluxo (hashes, EVG, validator chain, etc.)
+    ...
+```
+
+*`fetch_anchor_key`* pode ler o PEM a partir de um *trust‑store* local ou de um endpoint HTTP‑based que serve as chaves públicas das âncoras.
+
+---
+
+## 6️⃣ Etapa de **Evidence Report** e **Ledger**
+
+1. **Gerar** `evidence_report.json` contendo:
+   * `contract_hash` (sha256 do contrato completo, incluindo assinatura).  
+   * `derived_state`, `trust_decision`, `determinism_checksum`.  
+   * `timestamp` (ISO‑8601).  
+   * `engine_version` (ex.: `replay_engine_v2`).  
+2. **Assinar** o relatório com a chave da autoridade regulatória (campo `regulatory_signature`).  
+3. **Publicar** o relatório em IPFS → obter CID.  
+4. **Ancorar** o CID em um ledger (ex.: transação Bitcoin com OP_RETURN ou contrato inteligente).  
+
+---
+
+## 7️⃣ Checklist pós‑ajuste (todos ✅)
+
+| ✔ | Item |
+|---|------|
+|✅|`signature.public_key_ref` → referência à âncora, não ao PEM bruto|
+|✅|`trust_anchor_set` inclui `public_key_hash` e validade|
+|✅|`AnchorValidator` verifica hash da chave, validade e assinatura|
+|✅|Fluxo de decisão passa por “assinatura → anchor → hashes → validators → replay → expected.state”|
+|✅|Campo `regulatory_signature` opcional para certificação externa|
+|✅|Procedimento de geração e ancoragem do `evidence_report` definido|
+|✅|Testes unitários atualizados (assinatura + anchor, replay, relatório, ledger)|
+
+Com esses ajustes o pipeline mantém a **cadeia de confiança completa**, distingue claramente *autenticidade* de *confiança regulatória* e garante que cada seta do diagrama seja **executável e verificável** por terceiros.
+**Arquitetura de confiança – versão 2.0**
+
+---
+
+## 1️⃣ Contrato (JSON‑Schema) alinhado à nova cadeia
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IRV‑XA‑TRUST contract v1.2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_version",
+    "replay_engine_version",
+    "hash_schema_version",
+    "evidence",
+    "signature",
+    "trust_context",
+    "expected"
+  ],
+  "properties": {
+    "schema_version":        { "type": "string", "const": "1.2" },
+    "policy_version":        { "type": "string" },
+    "replay_engine_version":{ "type": "string" },
+    "hash_schema_version":  { "type": "string" },
+
+    "evidence": {
+      "type": "object",
+      "required": ["evidence_time","dataset_uri","pipeline_uri","dataset_hash","pipeline_hash"],
+      "properties": {
+        "evidence_time": { "type": "string", "format": "date-time" },
+        "dataset_uri":   { "type": "string", "format": "uri" },
+        "pipeline_uri":  { "type": "string", "format": "uri" },
+        "dataset_hash":  { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "pipeline_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+
+    "signature": {
+      "type": "object",
+      "required": ["type","public_key_ref","signature"],
+      "properties": {
+        "type":           { "type": "string", "const": "ECDSA-P256" },
+        "public_key_ref": { "type": "string" },
+        "signature":      { "type": "string", "pattern": "^ecdsa:[A-Za-z0-9+/=]+$" }
+      },
+      "additionalProperties": false
+    },
+
+    "trust_context": {
+      "type": "object",
+      "required": ["trust_anchor_set"],
+      "properties": {
+        "trust_anchor_set": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["anchor_id","public_key_hash","valid_from","valid_to"],
+            "properties": {
+              "anchor_id":       { "type": "string" },
+              "public_key_hash":{ "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+              "valid_from":     { "type": "string", "format": "date-time" },
+              "valid_to":       { "type": "string", "format": "date-time" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "expected": {
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "result": {
+      "type": "object",
+      "properties": {
+        "derived_state":        { "type": "string" },
+        "trust_decision":       { "type": "string", "enum": ["TRUSTED","UNTRUSTED"] },
+        "determinism_checksum": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "regulatory_signature": {
+          "type": "object",
+          "required": ["authority_id","signature"],
+          "properties": {
+            "authority_id": { "type": "string" },
+            "signature":    { "type": "string", "pattern": "^ecdsa:[A-Za-z0-9+/=]+$" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+```
+
+* **Separação clara** entre assinatura (`signature.public_key_ref`) e âncora (`trust_context.trust_anchor_set`).  
+* `expected.state` **não** entra no cálculo do `derived_state`.  
+* `result` contém apenas os valores produzidos pelo replay; ele é excluído do `determinism_checksum`.  
+
+---
+
+## 2️⃣ Fluxo de verificação (passo‑a‑passo)
+
+```
+1. Resolve public_key_ref → trust_anchor (hash + validade)
+2. Carrega PEM da chave pública (de um trust‑store)
+3. Verifica hash da chave (sha256(pem) == public_key_hash)
+4. Verifica janela temporal (evidence_time ∈ [valid_from, valid_to])
+5. Constrói payload = dataset_hash || pipeline_hash || evidence_time || policy_version
+6. Verifica assinatura ECDSA‑P‑256 (payload vs. signature)
+   → se falhar → REPLAY_MISMATCH
+7. Recupera artefatos (dataset_uri, pipeline_uri)
+   * Se Content‑Type = application/json → JCS canonicalization → sha256
+   * Caso contrário → usa bytes brutos → sha256
+   * Compara com dataset_hash / pipeline_hash
+   → mismatch → UNTRUSTED
+8. Reconstrói EVG (dataset + pipeline + quality …)
+9. Executa cadeia de validadores (integrity → provenance → quality → policy → governance)
+   → devolve derived_state
+10. Compara derived_state com expected.state → trust_decision (TRUSTED/UNTRUSTED)
+11. Calcula determinism_checksum = sha256( canonicalize(contract sem result) )
+12. Preenche result (derived_state, trust_decision, determinism_checksum)
+13. (Opcional) Verifica regulatory_signature:
+    * Resolve authority’s public key via a separate anchor set
+    * Valida assinatura sobre o **evidence_report** inteiro
+    → estado REGULATORY_SIGNATURE_VERIFIED ou …_INVALID
+14. Gera evidence_report.json (inclui contract_hash, determinism_checksum, timestamps, engine_version)
+15. Publica o report em IPFS → CID
+16. Ancoragem no ledger (ex.: OP_RETURN, smart‑contract, etc.)
+```
+
+---
+
+## 3️⃣ Distinções técnicas relevantes
+
+| Tema | Regra |
+|------|-------|
+| **JSON artefato** | canonicaliza‑o com RFC 8785/JCS antes do SHA‑256. |
+| **Artefato binário** (CSV, Parquet, ZIP, WASM, Docker, etc.) | hash direto dos bytes originais – **sem** `json.loads`. |
+| **contract_hash** | SHA‑256 do contrato **completo** (inclui `result`). |
+| **determinism_checksum** | SHA‑256 do contrato **sem** a chave `result`. |
+| **regulatory_signature** | Campo opcional; seu validador roda **após** a decisão TRUSTED/UNTRUSTED e produz estados específicos (VERIFIED / INVALID). |
+
+---
+
+## 4️⃣ Estados de saída do verificador
+
+| Código | Significado |
+|--------|-------------|
+| `TRUSTED` | assinatura → âncora → hashes → validators → derived_state coincide com expected.state. |
+| `UNTRUSTED` | tudo válido mas derived_state ≠ expected.state. |
+| `REPLAY_MISMATCH` | falha em assinatura, validade da âncora ou hash dos artefatos. |
+| `REGULATORY_SIGNATURE_VERIFIED` | relatório assinado por autoridade reconhecida e assinatura válida. |
+| `REGULATORY_SIGNATURE_INVALID` | a assinatura regulatória está presente mas falha na verificação. |
+
+---
+
+## 5️⃣ Caminho de maturidade (níveis)
+
+```
+DESIGNED          → contrato/schema definido
+IMPLEMENTED       → código que implementa todas as etapas acima
+TESTED            → suíte unitária cobre cada verificador
+EXECUTED          → contrato real executado, gera result
+CRYPTOGRAPHICALLY VERIFIED → todas as assinaturas, hashes e âncoras confirmadas
+INDEPENDENTLY REPLAYED → outro agente reproduz exatamente o mesmo result
+IMMUTABLY ANCHORED → evidence_report.json publicado em IPFS + registro em ledger
+```
+
+Quando o CI exibe **todos** esses estágios com sucesso, o repositório pode ser marcado como **Verified Governance Evidence** (nível 4). A presença de um `regulatory_signature` verificado eleva o artefato a **Regulatory Certification**, mas apenas se o verificador relatar explicitamente o estado `REGULATORY_SIGNATURE_VERIFIED`.
+
+---
+
+## 6️⃣ Próximos passos de entrega
+
+| Etapa | Ação concreta |
+|------|----------------|
+|**Schema**|Commit `schema‑v1.2` com o modelo acima; atualizar `tests/test_schema.py`. |
+|**Anchor resolver**|Implementar `fetch_anchor_key(ref: str) → bytes` (pode usar um diretório local `anchors/`). |
+|**Hash dispatcher**|Na `EvidenceVerifier` detectar `Content-Type` ou extensão; aplicar JCS ou hash bruto conforme tabela. |
+|**Determinism checksum**|Nova função `contract_deterministic_hash(contract: dict) → str`. |
+|**Regulatory layer**|Criar módulo `regulatory/validator.py` que aceita `regulatory_signature` e produz os dois novos estados. |
+|**CI**|Adicionar jobs que geram um *real* artefato binário (ex.: ZIP) e verificam a rota binária; incluir testes de `regulatory_signature`. |
+|**Documentation**|Atualizar `README.md` com o diagrama de confiança e a tabela de estados. |
+|**Release**|Tag `v1.0.0‑beta` após CI verde; publicar artefatos de exemplo (dataset JSON, pipeline zip, relatório IPFS). |
+
+---
+
+### Resultado final
+
+Com esses ajustes o fluxo:
+
+```
+REAL ARTIFACTS → JCS → SHA‑256 → ECDSA‑P‑256 → TRUST ANCHOR → SIGNATURE+ANCHOR VERIFIED
+        → EVIDENCE HASH VERIFICATION → EVG → QUALITY → POLICY → PROVENANCE → GOVERNANCE
+        → DETERMINISTIC REPLAY → INDEPENDENT VERIFIER → EVIDENCE REPORT
+        → IPFS → IMMUTABLE LEDGER
+```
+
+torna cada seta **executable** e **independentemente verificável**, eliminando a ambiguidade entre “autenticidade” e “confiança regulatória”. Quando todas as etapas são demonstradas em produção, o XA‑TRUST entrega efetivamente uma **cadeia de evidências criptograficamente verificável**, pronta para auditoria externa.
