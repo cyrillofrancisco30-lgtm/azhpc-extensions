@@ -39,11 +39,7 @@ NSL-25-165432
       │
       ├─ Public availability        ✓
       ├─ Source traceability        ✓
-      ├─ Legal/temporal metadata    ✓
-      ├─ Document hash              PENDING
-      ├─ Signature verification     PENDING
-      ├─ Independent verification   PENDING
-      └─ Immutable anchor           PENDING
+      ├─ Legal/temporal metadata    
       │
       ▼
 GOVERNANCE EVIDENCE
