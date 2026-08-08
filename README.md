@@ -35,6 +35,37 @@ xa-trust/
 ├─ LICENSE
 └─ pyproject.toml                # dependências (pydantic, cryptography, jsonschema)
 ```
+NSL-25-165432
+      │
+      ├─ Public availability        ✓
+      ├─ Source traceability        ✓
+      ├─ Legal/temporal metadata    ✓
+      ├─ Document hash              PENDING
+      ├─ Signature verification     PENDING
+      ├─ Independent verification   PENDING
+      └─ Immutable anchor           PENDING
+      │
+      ▼
+GOVERNANCE EVIDENCE
+TRACEABLE
+      │
+      ▼
+XA-TRUST DEP INPUT
+      │
+      ▼
+VERIFICATION ENGINE
+      │
+      ├─ G1 Cryptographic Build
+      ├─ G2 Trust Anchor
+      ├─ G3 Deterministic Replay
+      ├─ G4 Independent Verification
+      ├─ G5 Evidence Report
+      └─ G6 Immutable Anchor
+      │
+      ▼
+TRUST ASSERTION
+
+
 
 ---
 
