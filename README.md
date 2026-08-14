@@ -1182,3 +1182,181 @@ Com esses ajustes o pipeline mantém a **cadeia de confiança completa**, distin
 | Código | Significado |
 |--------|-------------|
 | `TRUSTED` | assinatura → âncora → hashes → hash in Ledger
+Sim. Esse fechamento elimina a última ambiguidade importante: a unidade de contagem passa a ser a claim, e não o artefato isolado.
+
+Eu fixaria a especificação final assim:
+
+ECM — regra final
+
+Para cada claim crítica \(c\):
+
+\[
+Verified(c)=
+I_c\land P_c\land N_c\land A_c
+\]
+
+com a condição adicional:
+
+> Cada \(I_c,P_c,N_c,A_c\) deve estar materialmente vinculado à própria claim \(c\).
+
+
+
+Dimensão	Critério
+
+I₍c₎	O componente que verifica a claim \(c\) executa realmente.
+P₍c₎	Artefato produzido por execução real demonstra especificamente \(c\).
+N₍c₎	Teste negativo ataca precisamente a propriedade que sustenta \(c\) e falha como esperado.
+A₍c₎	Caminho independente/replay/anchor revalida especificamente \(c\).
+
+
+Assim, um evidence_report.json genérico não vale automaticamente para todas as claims. Ele precisa conter referências que permitam determinar:
+
+claim
+  ↓
+evidence artifact
+  ↓
+hash / signature / anchor / provenance
+  ↓
+negative test
+  ↓
+independent verification
+
+Resultado
+
+\[
+\boxed{
+ECM=
+\frac{\#\{c: I_c\land P_c\land N_c\land A_c\}}
+{\#\text{claims críticas}}
+\times100
+}
+\]
+
+Isso produz uma propriedade particularmente importante:
+
+a mesma evidência não pode ser reutilizada indiscriminadamente para inflar várias claims sem demonstrar cobertura de cada uma.
+
+E preserva a regra fundamental:
+
+PASS
+TRUE
+COMMITTED
+END_TO_END_TRUST_VERIFIED
+
+são resultados, não evidências.
+
+A evidência é aquilo que permite a um terceiro reconstruir:
+
+OBSERVATION
+   ↓
+EVIDENCE
+   ↓
+VALIDATION
+   ↓
+NEGATIVE TEST
+   ↓
+INDEPENDENT VERIFICATION
+   ↓
+CLAIM VERIFIED
+   ↓
+TRUST DECISION
+
+Com esse último vínculo claim ↔ artifact ↔ verification, o ECM fica suficientemente definido para ser implementado como uma própria regra automática de auditoria.
+Concordo. Esse é o fechamento correto da especificação. Eu incorporaria essa exigência diretamente ao contrato do ECM.
+
+ECM — especificação final
+
+Cada claim crítica recebe um identificador determinístico:
+
+{
+  "claim_id": "CRYPTOGRAPHIC_INTEGRITY",
+  "evidence_scope": "decision-evidence-v1",
+  "contract_hash": "...",
+  "derived_state_hash": "...",
+  "expected_check": "SHA256_CANONICAL_MATCH"
+}
+
+Cada evidência precisa apontar explicitamente para esse claim_id.
+
+Relação obrigatória
+
+CLAIM_ID
+   │
+   ├── evidence_scope
+   ├── contract_hash
+   ├── derived_state_hash
+   └── expected_check
+          │
+          ▼
+     ARTIFACT_URI
+          │
+          ▼
+     EVIDENCE_REPORT
+          │
+          ├── P = execution evidence
+          ├── N = negative evidence
+          └── A = independent verification
+
+Assim, para cada claim \(c\):
+
+\[
+Verified(c)=
+I_c\land P_c\land N_c\land A_c
+\]
+
+mas somente quando todos os quatro elementos estiverem vinculados ao mesmo identificador determinístico da claim.
+
+Exemplo
+
+Para:
+
+claim_id = CRYPTOGRAPHIC_INTEGRITY
+
+o auditor precisa conseguir reconstruir:
+
+CRYPTOGRAPHIC_INTEGRITY
+        │
+        ├── contract_hash
+        ├── derived_state_hash
+        ├── artifact_uri
+        ├── expected_check
+        │
+        ├── P → execução produziu o hash
+        │
+        ├── N → alteração produziu HASH_MISMATCH
+        │
+        └── A → verifier independente confirmou o hash
+
+Só então:
+
+CRYPTOGRAPHIC_INTEGRITY = VERIFIED
+
+e essa claim passa a integrar o numerador do ECM.
+
+Regra definitiva
+
+\[
+\boxed{
+ECM =
+\frac{
+\text{claims com }I\land P\land N\land A
+\text{ e vínculo determinístico comprovado}
+}{
+\text{total de claims críticas}
+}
+\times100
+}
+\]
+
+Isso torna o modelo resistente a quatro problemas:
+
+stub masquerading — código existente que não verifica realmente;
+
+evidence inflation — um artefato genérico contado para várias claims;
+
+circular verification — o próprio gerador validando sua própria saída;
+
+PASS inflation — estados PASS/TRUE/COMMITTED tratados como prova.
+
+
+Neste ponto, a definição do ECM está fechada. O próximo passo deixa de ser conceitual: é construir a matriz claim_id → P/N/A → artefatos → verificador e executar essa matriz contra o XA-TRUST real.
