@@ -174,6 +174,140 @@ CLAIM VERIFIED
 
 Portanto, NSL-25-165432 → GOVERNANCE EVIDENCE → TRACEABLE é uma classificação apropriada para a camada inicial.
 
+Exatamente. Com a estrutura completa, eu consolidaria o modelo em duas camadas distintas: admissibilidade/rastreabilidade da fonte e, depois, verificação criptográfica da claim.
+
+NSL-25-165432
+      │
+      ├── Public availability          ✓
+      ├── Source traceability          ✓
+      └── Legal / temporal metadata    ✓
+      │
+      ▼
+┌──────────────────────────────┐
+│ GOVERNANCE EVIDENCE          │
+│ STATUS = TRACEABLE           │
+└──────────────────────────────┘
+      │
+      │  DEP INPUT
+      ▼
+┌──────────────────────────────┐
+│ XA-TRUST DEP                 │
+│                              │
+│ source + metadata + claims   │
+│ + evidence + replay context  │
+└──────────────────────────────┘
+      │
+      ▼
+┌──────────────────────────────┐
+│ VERIFICATION ENGINE          │
+│                              │
+│ G1 Cryptographic Build       │
+│ G2 Trust Anchor              │
+│ G3 Deterministic Replay     │
+│ G4 Independent Verification │
+│ G5 Evidence Report           │
+│ G6 Immutable Anchor          │
+└──────────────────────────────┘
+      │
+      ▼
+   CLAIM VERIFIED
+      │
+      ▼
+ TRUST ASSERTION
+
+A distinção fundamental
+
+O ponto mais importante é:
+
+TRACEABLE ≠ VERIFIED ≠ TRUSTED
+
+Assim:
+
+Estado	O que demonstra
+
+TRACEABLE	A fonte e seus metadados podem ser localizados e identificados
+CRYPTOGRAPHICALLY VERIFIED	Integridade/autenticidade foram efetivamente verificadas
+CLAIM VERIFIED	A evidência satisfaz os critérios I ∧ P ∧ N ∧ A da claim
+TRUSTED	A cadeia de decisão do XA-TRUST chegou ao estado confiável
+REGULATORY_CERTIFIED	Uma autoridade externa competente também atestou a evidência
+
+
+Aplicando ao ECM
+
+A claim não deve receber VERIFIED apenas porque o NSL é público.
+
+CLAIM
+NSL-25-165432_TRACEABILITY
+        │
+        ├── I ─ implementação executada
+        ├── P ─ evidência produzida
+        ├── N ─ tampering/mismatch rejeitado
+        └── A ─ verificação independente
+        │
+        ▼
+ I ∧ P ∧ N ∧ A
+        │
+        ▼
+     VERIFIED
+
+Depois disso, a claim pode contribuir para:
+
+ECM
+ │
+ ├── TRACEABILITY
+ ├── CRYPTOGRAPHIC_INTEGRITY
+ ├── AUTHENTICITY
+ ├── PROVENANCE
+ ├── DETERMINISTIC_REPLAY
+ └── INDEPENDENT_VERIFICATION
+
+E somente a combinação definida pelo contrato pode produzir:
+
+TRUST ASSERTION
+
+O papel dos seis Gs
+
+Eu também manteria os G1–G6 como gates de evidência, não como simples etapas de documentação:
+
+G1 ─ Cryptographic Build
+     │
+     ├─ código executável
+     ├─ commit
+     └─ artefato/hash
+     
+G2 ─ Trust Anchor
+     │
+     ├─ anchor_id
+     ├─ public_key_hash
+     └─ validity window
+
+G3 ─ Deterministic Replay
+     │
+     ├─ JCS
+     ├─ SHA-256
+     └─ same inputs → same result
+
+G4 ─ Independent Verification
+     │
+     └─ terceiro/reimplementação/replay independente
+
+G5 ─ Evidence Report
+     │
+     ├─ claim_id
+     ├─ contract_hash
+     ├─ result
+     └─ determinism_checksum
+
+G6 ─ Immutable Anchor
+     │
+     └─ registro externo imutável
+     
+     ▼
+
+TRUST ASSERTION
+
+Portanto, o NSL-25-165432 entra no XA-TRUST como GOVERNANCE EVIDENCE / TRACEABLE; 
+
 
 
 
