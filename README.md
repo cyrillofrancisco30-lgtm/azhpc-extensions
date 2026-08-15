@@ -1,39 +1,83 @@
-
+xa-trust/
+│
+├─ .github/
+│   └─ workflows/
+│       ├─ ci.yml
+│       └─ evidence.yml
+│
+├─ src/
+│   ├─ canonicalization/
+│   │   └─ rfc8785_jcs.py
+│   │
+│   ├─ hash/
+│   │   └─ sha256.py
+│   │
+│   ├─ signature/
+│   │   └─ ecdsa_verifier.py
+│   │
+│   ├─ anchor/
+│   │   └─ anchor_validator.py
+│   │
+│   ├─ evidence/
+│   │   └─ evidence_verifier.py
+│   │
+│   ├─ replay/
+│   │   └─ engine.py
+│   │
+│   ├─ verifier/
+│   │   └─ verifier.py
+│   │
+│   ├─ evg/
+│   │   └─ evg_reconstructor.py
+│   │
+│   ├─ validator/
+│   │   └─ validator_chain.py
+│   │
+│   ├─ ecm/
+│   │   └─ claim_matrix.py
+│   │
+│   └─ utils/
+│       └─ io.py
+│
+├─ contracts/
+│   └─ irv_xa_trust_schema.json
+│
+├─ examples/
+│   └─ sample_package.json
+│
+├─ evidence/
+│   ├─ claims/
+│   ├─ produced/
+│   ├─ expected/
+│   ├─ negative/
+│   └─ reports/
+│
+├─ tests/
+│   ├─ test_canonicalization.py
+│   ├─ test_hash.py
+│   ├─ test_signature.py
+│   ├─ test_anchor.py
+│   ├─ test_evidence.py
+│   ├─ test_replay.py
+│   ├─ test_verifier.py
+│   ├─ test_negative.py
+│   ├─ test_independent_verifier.py
+│   └─ test_ecm.py
+│
+├─ scripts/
+│   ├─ generate_hashes.py
+│   ├─ generate_evidence_report.py
+│   └─ compute_ecm.py
+│
+├─ README.md
+├─ LICENSE
+└─ pyproject.toml
 
 ---
 
 ## 1. Estrutura do repositório
 
-```
-xa-trust/
-├─ .github/
-│   └─ workflows/
-│       └─ ci.yml                # CI de validação (lint, testes, replay)
-├─ src/
-│   ├─ canonicalization/
-│   │   └─ rfc8785_jcs.py        # implementação RFC 8785 / JCS
-│   ├─ hash/
-│   │   └─ sha256.py             # wrapper simples para SHA‑256
-│   ├─ replay/
-│   │   └─ engine.py             # motor determinístico (versão 2.1.0)
-│   ├─ verifier/
-│   │   └─ verifier.py           # orquestração completa
-│   └─ utils/
-│       └─ io.py                 # fetch de artefatos (IPFS, S3, HTTP)
-├─ contracts/
-│   └─ irv_xa_trust_schema.json   # esquema JSON do contrato (versão 1.0)
-├─ examples/
-│   └─ sample_package.json       # exemplo de payload (place‑holders)
-├─ tests/
-│   ├─ test_canonicalization.py
-│   ├─ test_hash.py
-│   ├─ test_replay.py
-│   └─ test_verifier.py
-├─ scripts/
-│   └─ generate_hashes.py        # gera dataset_hash, pipeline_hash, etc.
-├─ README.md
-├─ LICENSE
-└─ pyproject.toml                # dependências (pydantic, cryptography, jsonschema)
+
 ```
 NSL-25-165432
       │
