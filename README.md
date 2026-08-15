@@ -92,6 +92,90 @@ VERIFICATION ENGINE
       ▼
 TRUST ASSERTION
 
+Sim. Esse trecho representa corretamente o primeiro estágio de admissibilidade da evidência, mas eu faria uma distinção importante: “public availability” e “source traceability” tornam o documento rastreável; não tornam, por si só, o conteúdo verdadeiro ou autenticado.
+
+Eu estruturaria assim:
+
+NSL-25-165432
+      │
+      ├── Public availability
+      │       ✓ fonte pública identificável
+      │
+      ├── Source traceability
+      │       ✓ origem/localização recuperável
+      │
+      ├── Legal / temporal metadata
+      │       ✓ número, datas e metadados documentais
+      │
+      ▼
+GOVERNANCE EVIDENCE
+      │
+      └── TRACEABLE
+
+O que TRACEABLE significa
+
+Nesse ponto, a conclusão legítima é:
+
+TRACEABLE
+
+e não:
+
+VERIFIED
+TRUSTED
+AUTHENTICATED
+REGULATORY_CERTIFIED
+
+A cadeia seguinte seria:
+
+NSL-25-165432
+      │
+      ▼
+TRACEABILITY
+      │
+      ├── source identified
+      ├── public artifact retrieved
+      ├── temporal metadata captured
+      └── legal/document metadata captured
+      │
+      ▼
+XA-TRUST DEP
+      │
+      ▼
+CANONICALIZATION
+      │
+      ▼
+SHA-256
+      │
+      ▼
+SIGNATURE / TRUST ANCHOR
+      │
+      ▼
+INDEPENDENT VERIFICATION
+      │
+      ▼
+DETERMINISTIC REPLAY
+      │
+      ▼
+CLAIM VERIFICATION
+
+E, para o seu ECM:
+
+CLAIM: NSL-25-165432_TRACEABILITY
+
+I = implementação executada
+P = evidência documental produzida
+N = tentativa de alteração/mismatch rejeitada
+A = verificação independente
+
+I ∧ P ∧ N ∧ A
+        │
+        ▼
+CLAIM VERIFIED
+
+Portanto, NSL-25-165432 → GOVERNANCE EVIDENCE → TRACEABLE é uma classificação apropriada para a camada inicial.
+
+
+
 
 01  Load Contract
 02  Validate Schema
