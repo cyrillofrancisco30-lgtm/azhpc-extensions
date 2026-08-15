@@ -232,6 +232,97 @@ TRUSTED	A cadeia de decisão do XA-TRUST chegou ao estado confiável
 REGULATORY_CERTIFIED	Uma autoridade externa competente também atestou a evidência
 
 
+REQUEST  
+                │  
+                ▼  
+          API Gateway  
+                │  
+                ▼  
+      XA Banking Core 9.6  
+                │  
+                ▼  
+          Risk Engine  
+                │  
+                ▼  
+  Decision Evidence Package (DEP)  
+                │  
+                ▼  
+          Audit Layer  
+                │  
+                ▼  
+             RESPONSE
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+API funcionando
+Processamento concluído
+Resposta entregue
+
+{
+"status": "SUCCESS",
+"request_id": "REQ-2026-001",
+"decision_id": "DEC-2026-001",
+"software_version": "xa-banking-core-9.6",
+"runtime_attestation": "VALID",
+"artifact_hash": "sha256:xxxx-yyyy",
+"evidence_package": {
+"status": "VERIFIED",
+"merkle_root": "xxxx"
+}
+}
+
+Código        ✔
+|
+Build         ✔
+|
+Artefato      ✔
+|
+Runtime TEE   ✔
+|
+Modelo        ✔
+|
+Decisão       ✔
+|
+Evidência     ✔
+
+TRUST STATUS: VERIFIED ✅
+
+{
+"transaction": {
+"request_id": "REQ-2026-001",
+"decision_id": "DEC-2026-001"
+},
+
+"decision": {
+"result": "APPROVED",
+"model_version": "risk-engine-2.1",
+"policy_version": "policy-2026.07"
+},
+
+"execution": {
+"software_version": "xa-banking-core-9.6",
+"runtime_attestation": "VALID",
+"artifact_hash": "sha256:xxxx-yyyy"
+},
+
+"evidence": {
+"dep_status": "VERIFIED",
+"merkle_root": "xxxx"
+}
+}
+
+HTTP 200
+
+"o sistema respondeu"
+
+VERIFIED
+
+"a decisão possui evidência verificável"
+
+
+
+
 Aplicando ao ECM
 
 A claim não deve receber VERIFIED apenas porque o NSL é público.
