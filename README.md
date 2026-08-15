@@ -1,75 +1,62 @@
-xa-trust/
+xaxa-trust/
 │
 ├─ .github/
-│   └─ workflows/
-│       ├─ ci.yml
-│       └─ evidence.yml
+│  └─ workflows/
+│     ├─ ci.yml
+│     └─ evidence.yml
 │
 ├─ src/
-│   ├─ canonicalization/
-│   │   └─ rfc8785_jcs.py
-│   │
-│   ├─ hash/
-│   │   └─ sha256.py
-│   │
-│   ├─ signature/
-│   │   └─ ecdsa_verifier.py
-│   │
-│   ├─ anchor/
-│   │   └─ anchor_validator.py
-│   │
-│   ├─ evidence/
-│   │   └─ evidence_verifier.py
-│   │
-│   ├─ replay/
-│   │   └─ engine.py
-│   │
-│   ├─ verifier/
-│   │   └─ verifier.py
-│   │
-│   ├─ evg/
-│   │   └─ evg_reconstructor.py
-│   │
-│   ├─ validator/
-│   │   └─ validator_chain.py
-│   │
-│   ├─ ecm/
-│   │   └─ claim_matrix.py
-│   │
-│   └─ utils/
-│       └─ io.py
+│  ├─ canonicalization/
+│  │  └─ rfc8785_jcs.py
+│  ├─ hash/
+│  │  └─ sha256.py
+│  ├─ signature/
+│  │  └─ ecdsa_verifier.py
+│  ├─ anchor/
+│  │  └─ anchor_validator.py
+│  ├─ evidence/
+│  │  └─ evidence_verifier.py
+│  ├─ replay/
+│  │  └─ engine.py
+│  ├─ verifier/
+│  │  └─ verifier.py
+│  ├─ evg/
+│  │  └─ evg_reconstructor.py
+│  ├─ validator/
+│  │  └─ validator_chain.py
+│  ├─ ecm/
+│  │  └─ claim_matrix.py
+│  └─ utils/
+│     └─ io.py
 │
 ├─ contracts/
-│   └─ irv_xa_trust_schema.json
+│  └─ irv_xa_trust_schema.json
 │
 ├─ examples/
-│   └─ sample_package.json
-│
-├─ evidence/
-│   ├─ claims/
-│   ├─ produced/
-│   ├─ expected/
-│   ├─ negative/
-│   └─ reports/
+│  └─ sample_package.json
 │
 ├─ tests/
-│   ├─ test_canonicalization.py
-│   ├─ test_hash.py
-│   ├─ test_signature.py
-│   ├─ test_anchor.py
-│   ├─ test_evidence.py
-│   ├─ test_replay.py
-│   ├─ test_verifier.py
-│   ├─ test_negative.py
-│   ├─ test_independent_verifier.py
-│   └─ test_ecm.py
+│  ├─ test_canonicalization.py
+│  ├─ test_hash.py
+│  ├─ test_signature.py
+│  ├─ test_anchor.py
+│  ├─ test_evidence.py
+│  ├─ test_replay.py
+│  ├─ test_verifier.py
+│  ├─ test_negative.py
+│  ├─ test_independent_verifier.py
+│  └─ test_ecm.py
 │
 ├─ scripts/
-│   ├─ generate_hashes.py
-│   ├─ generate_evidence_report.py
-│   └─ compute_ecm.py
+│  ├─ generate_hashes.py
+│  ├─ generate_evidence_report.py
+│  └─ compute_ecm.py
 │
 ├─ README.md
+├─ LICENSE
+└─ pyproject.toml
+
+
 ├─ LICENSE
 └─ pyproject.toml
 
