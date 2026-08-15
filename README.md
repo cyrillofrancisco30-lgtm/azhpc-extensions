@@ -1360,3 +1360,129 @@ PASS inflation — estados PASS/TRUE/COMMITTED tratados como prova.
 
 
 Neste ponto, a definição do ECM está fechada. O próximo passo deixa de ser conceitual: é construir a matriz claim_id → P/N/A → artefatos → verificador e executar essa matriz contra o XA-TRUST real.
+
+name: RFC8785 JCS Conformance
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          if [ -f pyproject.toml ]; then
+            pip install .
+          fi
+
+      - name: RFC8785 JCS byte-for-byte conformance
+        id: conformance
+        run: |
+          set +e
+          pytest -q tests/test_rfc8785_jcs_conformance.py \
+            | tee pytest-output.txt
+          rc=${PIPESTATUS[0]}
+
+          if [ "$rc" -eq 0 ]; then
+            echo "PASS" > test_status.txt
+          else
+            echo "FAIL" > test_status.txt
+          fi
+
+          exit "$rc"
+
+      - name: Generate execution metadata
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import platform
+
+          meta = {
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "commit_sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "ref": os.environ.get("GITHUB_REF"),
+              "python_version": platform.python_version(),
+              "platform": platform.platform(),
+          }
+
+          with open("execution_metadata.json", "w", encoding="utf-8") as f:
+              json.dump(meta, f, indent=2, sort_keys=True)
+
+          print(json.dumps(meta, indent=2, sort_keys=True))
+          PY
+
+      - name: Generate verification report
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          status = Path("test_status.txt").read_text().strip() \
+              if Path("test_status.txt").exists() else "NOT_EXECUTED"
+
+          report = {
+              "verification": "RFC8785_JCS_BYTE_FOR_BYTE",
+              "status": status,
+          }
+
+          Path("verification_report.json").write_text(
+              json.dumps(report, indent=2, sort_keys=True),
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rfc8785-jcs-evidence
+          path: |
+            verification_report.json
+            execution_metadata.json
+            pytest-output.txt
+            test_status.txt
+
+repository
+= cyrillofrancisco30-lgtm/azhpc-extensions
+
+commit_sha
+= dddab15ba47d860a514cea2cace754a7e387456b
+
+run_id
+= <RUN REAL>
+
+test
+= test_rfc8785_jcs_conformance.py
+
+ProducedBytes
+= <bytes produzidos>
+
+ExpectedBytes
+= <vetor>
+
+comparison
+= BYTE-FOR-BYTE
+
+status
+= PASS
