@@ -1,4 +1,4 @@
-xaxa-trust/
+XA-trust/
 │
 ├─ .github/
 │  └─ workflows/
