@@ -2090,3 +2090,169 @@ comparison
 
 status
 = PASS
+
+Para comparar dois arquivos byte a byte no seu ambiente local você pode usar ferramentas de linha de comando que já vêm instaladas na maioria dos sistemas Unix‑like (Linux, macOS) ou, no Windows, usar o PowerShell. A seguir estão os métodos mais simples e seguros.
+
+
+---
+
+1. Linux / macOS
+
+cmp – comparação direta
+
+cmp --bytes=1000 arquivo1.bin arquivo2.bin
+
+Sem opções – o cmp lê os dois arquivos e, ao encontrar a primeira diferença, informa o offset (posição em bytes) e os valores dos bytes diferentes.
+
+Opção --bytes=N – limita a comparação aos primeiros N bytes, útil quando o arquivo é muito grande e você só quer validar um trecho.
+
+Retorno: código de saída 0 = idênticos; 1 = diferença encontrada; >1 = erro (arquivo não encontrado, permissão etc.).
+
+
+diff – modo “binary”
+
+diff -a --brief arquivo1.bin arquivo2.bin
+
+-a trata os arquivos como texto, mas com --brief o diff só indica se eles são diferentes ou não.
+
+Para ver exatamente onde está a diferença, use diff -a arquivo1.bin arquivo2.bin | hd (o hd exibe o hexdump da saída).
+
+
+hexdump + diff
+
+hexdump -C arquivo1.bin > dump1.txt  
+hexdump -C arquivo2.bin > dump2.txt  
+diff dump1.txt dump2.txt
+
+Converte cada arquivo para um dump legível (endereço + valores hex + ASCII).
+
+O diff então mostra linhas diferentes, facilitando a inspeção manual.
+
+
+sha256sum – verificação de integridade
+
+Se o objetivo for garantir que todo o conteúdo seja idêntico, basta comparar o hash:
+
+sha256sum arquivo1.bin arquivo2.bin
+
+Se os dois hashes coincidirem, os arquivos são idênticos com probabilidade criptográfica ≈ 2⁻²⁵⁶.
+
+
+
+---
+
+2. Windows (PowerShell)
+
+Compare-Object com byte arrays
+
+$bytes1 = [System.IO.File]::ReadAllBytes('C:\caminho\arquivo1.bin')  
+$bytes2 = [System.IO.File]::ReadAllBytes('C:\caminho\arquivo2.bin')  
+  
+if ($bytes1.Length -ne $bytes2.Length) {  
+    Write-Host "Tamanhos diferentes."  
+} else {  
+    $diff = Compare-Object -ReferenceObject $bytes1 -DifferenceObject $bytes2 -SyncWindow 0  
+    if ($diff) {  
+        Write-Host "Diferenças encontradas."  
+    } else {  
+        Write-Host "Arquivos idênticos."  
+    }  
+}
+
+Este script carrega os dois arquivos como vetores de bytes (byte[]) e usa Compare-Object para detectar a primeira diferença.
+
+
+fc /b – comparação binária nativa
+
+fc /b arquivo1.bin arquivo2.bin
+
+O fc (File Compare) exibe o offset decimal onde a primeira diferença ocorre e os valores dos bytes em ambas as versões.
+
+
+certutil – geração de hash
+
+certutil -hashfile arquivo1.bin SHA256  
+certutil -hashfile arquivo2.bin SHA256
+
+Assim como sha256sum no Linux, compara os hashes gerados.
+
+
+
+---
+
+3. Dicas práticas
+
+Situação	Ferramenta recomendada	Por quê
+
+Arquivos pequenos (até alguns MB)	cmp / fc /b	Rápido, mostra exatamente o primeiro byte diferente.
+Arquivos muito grandes (GB)	cmp --bytes=N ou sha256sum	Evita ler o arquivo inteiro; hash é mais econômico em I/O.
+Precisa de relatório legível	hexdump + diff	Permite inspeção manual linha a linha.
+Validação automatizada em scripts CI/CD	sha256sum ou certutil	Basta comparar strings de hash.
+
+
+
+---
+
+4. Exemplo completo (Linux)
+
+#!/usr/bin/env bash  
+set -euo pipefail  
+  
+FILE1="xatev-ev-2026-000002-audit.txt"  
+FILE2="/tmp/backup/audit-copy.txt"  
+  
+# 1️⃣ Verifica tamanho  
+if [[ $(stat -c%s "$FILE1") -ne $(stat -c%s "$FILE2") ]]; then  
+    echo "❌ Tamanhos diferentes"  
+    exit 1  
+fi  
+  
+# 2️⃣ Compare byte a byte (primeira diferença)  
+if cmp -l "$FILE1" "$FILE2" > /dev/null; then  
+    echo "✅ Arquivos idênticos"  
+else  
+    echo "⚠️ Diferenças encontradas (primeira ocorrência):"  
+    cmp -l "$FILE1" "$FILE2" | head -n 1  
+fi  
+  
+# 3️⃣ Hash de integridade  
+HASH1=$(sha256sum "$FILE1" | cut -d' ' -f1)  
+HASH2=$(sha256sum "$FILE2" | cut -d' ' -f1)  
+  
+if [[ "$HASH1" == "$HASH2" ]]; then  
+    echo "🔐 Hashes coincidem: $HASH1"  
+else  
+    echo "❗️ Hashes divergem"  
+    echo "  $FILE1 : $HASH1"  
+    echo "  $FILE2 : $HASH2"  
+fi
+
+Este script:
+
+1. Confirma que os dois arquivos têm o mesmo tamanho.
+
+
+2. Usa cmp -l para localizar a primeira diferença (mostra offset e valores hex).
+
+
+3. Calcula SHA‑256 de ambos e verifica a correspondência.
+
+
+
+
+---
+
+Resumo rápido
+
+Ferramenta	Sistema	Uso principal
+
+cmp / fc /b	Linux/macOS / Windows	Comparação byte a byte, aponta primeira diferença
+diff -a --brief	Linux/macOS	Só diz “diferentes” ou “idênticos”
+hexdump + diff	Linux/macOS	Visualização human‑readable
+sha256sum / certutil	Linux/macOS / Windows	Verificação de integridade por hash
+PowerShell Compare-Object	Windows	Comparação de arrays de bytes dentro de scripts
+
+
+Escolha a ferramenta que melhor se adapta ao seu fluxo (script automatizado, inspeção manual ou validação de integridade) e você terá certeza de que os arquivos são, de fato, byte a byte equivalentes.
+
+Essa implementação é bytes a bytes
