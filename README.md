@@ -60,6 +60,94 @@ xaxa-trust/
 ├─ LICENSE
 └─ pyproject.toml
 
+xa-trust-cvl-openapi.yaml
+
+openapi: 3.1.0
+
+├── info
+├── servers
+├── tags
+├── securitySchemes
+
+├── paths
+
+│
+├── Group 1 — Contract Gateway
+│   ├── POST /contract/ingest                  API-01
+│   ├── POST /contract/validate-schema         API-02
+│   ├── GET  /contract/schemas/{version}       API-03
+│   ├── POST /gateway/mtls-challenge           API-04
+│   ├── POST /gateway/rate-limit/check         API-05
+│   ├── POST /contract/preprocess/sanitize     API-06
+│   ├── GET  /gateway/status                   API-07
+│   ├── POST /contract/tenant/verify           API-08
+│   ├── POST /contract/batch/split             API-09
+│   └── POST /contract/discard-queue           API-10
+
+│
+├── Group 2 — Cryptographic Verification
+│   ├── POST /crypto/canonicalize/rfc8785      API-11
+│   ├── POST /crypto/hash/sha256               API-12
+│   ├── POST /crypto/verify/ed25519            API-13
+│   ├── POST /crypto/keys/rotate               API-14
+│   ├── GET  /crypto/keys/trusted-roots        API-15
+│   ├── POST /crypto/verify/multi-sig          API-16
+│   ├── POST /crypto/hash/compare              API-17
+│   ├── POST /crypto/nonce/validate            API-18
+│   ├── POST /crypto/payload/extract           API-19
+│   └── POST /crypto/audit/hsm-session         API-20
+
+│
+├── Group 3 — Ledger Verification
+│   ├── POST /ledger/merkle/append             API-21
+│   ├── POST /ledger/merkle/proof-verify       API-22
+│   ├── GET  /ledger/merkle/root               API-23
+│   ├── GET  /ledger/block/{height}            API-24
+│   ├── POST /ledger/verify/consistency        API-25
+│   ├── GET  /ledger/merkle/path/{decision_id} API-26
+│   ├── POST /ledger/state/snapshot            API-27
+│   ├── POST /ledger/replay/verify             API-28
+│   ├── POST /ledger/freeze                    API-29
+│   └── GET  /ledger/audit-trail/export        API-30
+
+│
+├── Group 4 — Trust & Attestation
+
+│   ├── POST /anchor/bitcoin/prepare           API-31
+│   ├── POST /anchor/bitcoin/broadcast         API-32
+│   ├── GET  /anchor/bitcoin/status/{txid}     API-33
+│   ├── POST /policy/evaluate                  API-34
+│   ├── POST /policy/provenance/software       API-35
+│   ├── POST /policy/provenance/decision       API-36
+│   ├── POST /attestation/generate             API-37
+│   ├── POST /attestation/seal                 API-38
+│   └── GET  /attestation/verify/{verification_id} API-39
+
+
+└── components
+
+    ├── schemas
+
+    │   ├── DEP
+    │   ├── EvidenceItem
+    │   ├── CanonicalBinding
+    │   ├── Signature
+    │   ├── MerkleProof
+    │   ├── LedgerEntry
+    │   ├── ReplayRequest
+    │   ├── ReplayResult
+    │   ├── BitcoinAnchor
+    │   ├── PolicyEvaluation
+    │   ├── Attestation
+    │   ├── TrustReport
+    │   └── ErrorResponse
+
+    └── responses
+        ├── ValidationError
+        ├── Unauthorized
+        ├── IntegrityFailure
+        └── VerificationFailure
+
 ---
 
 ## 1. Estrutura do repositório
