@@ -5,7 +5,7 @@ XA-trust/
 │     ├─ ci.yml
 │     └─ evidence.yml
 │
-├─ src/
+├─ src/⁸
 │  ├─ canonicalization/
 │  │  └─ rfc8785_jcs.py
 │  ├─ hash/
@@ -163,6 +163,309 @@ openapi: 3.1.0
 }
 
 ## 1. Estrutura do repositório
+
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+  "predicate": "IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS",
+
+  "scope": {
+    "repository": "cyrillofrancisco30-lgtm/azhpc-extensions",
+    "commit_sha": "dddab15ba47d860a514cea2cace754a7e387456b",
+    "test_id": "test_rfc8785_jcs_conformance.py"
+  },
+
+  "verification": {
+    "I": "VERIFIED",
+    "P": "VERIFIED",
+    "N": "VERIFIED",
+    "A": "VERIFIED"
+  },
+
+  "status": "VERIFIED"
+}
+
+
+Sim. Com essa estrutura, o CLAIM-RFC8785-JCS-CONFORMANCE-001 pode ser tratado como uma claim verificável de nível ECM, mas há uma distinção arquitetural importante entre implementação, API contract e evidência da claim.
+
+1. Posição da claim na arquitetura
+
+XA-TRUST
+│
+├── contracts/
+│   └── irv_xa_trust_schema.json
+│
+├── src/
+│   ├── canonicalization/
+│   │   └── rfc8785_jcs.py
+│   ├── hash/
+│   │   └── sha256.py
+│   ├── signature/
+│   │   └── ecdsa_verifier.py
+│   ├── anchor/
+│   │   └── anchor_validator.py
+│   ├── evidence/
+│   │   └── evidence_verifier.py
+│   ├── evg/
+│   │   └── evg_reconstructor.py
+│   ├── replay/
+│   │   └── engine.py
+│   ├── validator/
+│   │   └── validator_chain.py
+│   ├── verifier/
+│   │   └── verifier.py
+│   └── ecm/
+│       └── claim_matrix.py
+│
+├── tests/
+│   ├── test_canonicalization.py
+│   ├── test_negative.py
+│   ├── test_independent_verifier.py
+│   └── test_ecm.py
+│
+├── .github/workflows/
+│   ├── ci.yml
+│   └── evidence.yml
+│
+└── xa-trust-cvl-openapi.yaml
+
+A claim não é simplesmente "um teste passou". Ela é uma afirmação sobre o comportamento verificável da implementação:
+
+CLAIM-RFC8785-JCS-CONFORMANCE-001
+                 │
+                 ▼
+IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS
+                 │
+                 ▼
+        ECM CLAIM MATRIX
+                 │
+       ┌─────────┼─────────┐
+       ▼         ▼         ▼
+       I         P         N
+       │         │         │
+       └─────────┼─────────┘
+                 ▼
+                 A
+                 │
+                 ▼
+              VERIFIED
+
+2. O claim_matrix.py deve ser o decisor do ECM
+
+Eu manteria a regra extremamente simples e determinística:
+
+REQUIRED_ELEMENTS = ("I", "P", "N", "A")
+
+
+def claim_verified(claim: dict) -> bool:
+    return all(
+        claim["verification"].get(element) == "VERIFIED"
+        for element in REQUIRED_ELEMENTS
+    )
+
+Mas não confiaria nos valores VERIFIED fornecidos pelo próprio JSON. Em uma implementação robusta, claim_matrix.py deve receber evidências observadas e derivar esses estados.
+
+observed evidence
+       │
+       ▼
+claim_matrix.py
+       │
+       ├── I evaluator
+       ├── P evaluator
+       ├── N evaluator
+       └── A evaluator
+              │
+              ▼
+       decision function
+              │
+              ▼
+       VERIFIED / NOT_VERIFIED
+
+Isso evita:
+
+"I": "VERIFIED"
+
+ser utilizado como uma declaração autoautenticada.
+
+
+---
+
+3. O OpenAPI CVL fica em outra camada
+
+O xa-trust-cvl-openapi.yaml representa o contrato declarativo da API.
+
+Por exemplo:
+
+OpenAPI
+   │
+   ▼
+API_CONFIGURATION
+   │
+   ▼
+RUNTIME_BINDING
+   │
+   ▼
+API_EXECUTION
+   │
+   ▼
+API_RESPONSE / AUDIT_EVENT
+   │
+   ▼
+EVIDENCE_PACKAGE
+   │
+   ▼
+INDEPENDENT_VERIFIER
+   │
+   ▼
+VERIFICATION_RESULT
+
+Portanto, a existência de:
+
+POST /crypto/canonicalize/rfc8785
+
+não prova:
+
+IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS
+
+Ela prova, no máximo, uma claim de configuração/contrato da API, dependendo da evidência.
+
+Isso preserva o invariante:
+
+API_CONFIGURATION ≠ API_EXECUTION
+API_EXECUTION    ≠ VERIFICATION_RESULT
+
+
+---
+
+4. A claim final
+
+O objeto que você apresentou é a saída semântica, não a totalidade da evidência:
+
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+  "predicate": "IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS",
+  "verification": {
+    "I": "VERIFIED",
+    "P": "VERIFIED",
+    "N": "VERIFIED",
+    "A": "VERIFIED"
+  },
+  "status": "VERIFIED"
+}
+
+O significado formal é:
+
+\[
+C_{JCS} =
+IMPLEMENTATION\_CONFORMS\_TO\_RFC8785\_JCS
+\]
+
+e:
+
+\[
+Verified(C_{JCS})
+\iff
+I_{C}\land P_{C}\land N_{C}\land A_{C}
+\]
+
+Portanto:
+
+I = VERIFIED
+P = VERIFIED
+N = VERIFIED
+A = VERIFIED
+        │
+        ▼
+CLAIM VERIFIED
+
+
+---
+
+5. O vínculo que falta no objeto compacto
+
+Para que isso seja evidência XA-TRUST completa, eu acrescentaria o vínculo de execução:
+
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+  "predicate": "IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS",
+
+  "scope": {
+    "repository": "cyrillofrancisco30-lgtm/azhpc-extensions",
+    "commit_sha": "dddab15ba47d860a514cea2cace754a7e387456b",
+    "test_id": "test_rfc8785_jcs_conformance.py"
+  },
+
+  "verification": {
+    "I": "VERIFIED",
+    "P": "VERIFIED",
+    "N": "VERIFIED",
+    "A": "VERIFIED"
+  },
+
+  "status": "VERIFIED"
+}
+
+E, quando executado no GitHub Actions:
+
+repository
+    +
+commit_sha
+    +
+run_id
+    +
+run_attempt
+    +
+test_id
+    +
+vector_set
+    +
+ProducedBytes
+    +
+ExpectedBytes
+    +
+negative_test
+    +
+independent_verification
+          │
+          ▼
+       CLAIM
+          │
+          ▼
+       VERIFIED
+
+Resultado arquitetural
+
+Com isso, o XA-TRUST passa a ter uma separação limpa:
+
+DECLARATIVE
+                     │
+              OpenAPI / Schema
+                     │
+                     ▼
+              IMPLEMENTATION
+                     │
+                     ▼
+                EXECUTION
+                     │
+                     ▼
+                 EVIDENCE
+                     │
+          ┌──────────┴──────────┐
+          ▼                     ▼
+     NEGATIVE TEST       INDEPENDENT TEST
+          │                     │
+          └──────────┬──────────┘
+                     ▼
+                ECM ENGINE
+                     │
+              I ∧ P ∧ N ∧ A
+                     │
+                     ▼
+              CLAIM VERIFIED
+                     │
+                     ▼
+            VERIFICATION_RESULT
+
+Esse desenho é consistente com o núcleo semântico congelado do XA-TRUST: a API, o código, a execução, a evidência e o resultado de verificação permanecem entidades distintas; a propriedade VERIFIED só aparece como resultado derivado para a claim dentro do seu escopo.
 
 
 ```
