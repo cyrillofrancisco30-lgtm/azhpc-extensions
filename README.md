@@ -852,6 +852,166 @@ TRUST ASSERTION
 Portanto, o NSL-25-165432 entra no XA-TRUST como GOVERNANCE EVIDENCE / TRACEABLE; 
 
 
+estrutura consolidada fica:
+                    CLAIM
+                      │
+                ┌─────┴─────┐
+                │  ClaimSet  │
+                └─────┬─────┘
+                      │
+                      ▼
+             ExecutionMetadata
+                      │
+                      ▼
+                EvidenceItem
+                      │
+              ┌───────┴────────┐
+              ▼                ▼
+      CanonicalBinding      Provenance
+              │
+              ▼
+          Signature
+              │
+              ▼
+         MerkleProof
+              │
+              ▼
+      LedgerEntry / Anchor
+              │
+              ▼
+       ReplayRequest
+              │
+              ▼
+        ReplayResult
+              │
+              ▼
+   ┌──────────────────────┐
+   │ VERIFICATION MATRIX  │
+   │                      │
+   │ I ─ evidence         │
+   │ P ─ evidence         │
+   │ N ─ evidence         │
+   │ A ─ independent      │
+   └──────────┬───────────┘
+              │
+          I ∧ P ∧ N ∧ A
+              │
+              ▼
+        CLAIM VERIFIED
+              │
+              ▼
+       PolicyEvaluation
+              │
+              ▼
+          TrustReport
+              │
+              ▼
+            Decision
+Uma correção semântica importante
+Eu manteria sua distinção:
+PASS ≠ VERIFIED
+Mas refinaria:
+PASS
+  │
+  ▼
+resultado observado de uma execução de teste
+
+EvidenceItem
+  │
+  ▼
+artefato preservado que permite verificar esse resultado
+
+VerificationMatrix
+  │
+  ▼
+mapeamento explícito entre claim, checks e evidências
+
+VERIFICATION_RESULT
+  │
+  ▼
+conclusão independente
+Isso evita transformar o próprio PASS em uma autoridade.
+Para RFC 8785
+A claim fica:
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+  "predicate": "IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS",
+  "evidence_scope": "rfc8785-jcs-conformance-v1",
+  "expected_check": "BYTE_FOR_BYTE_EQUALITY",
+  "critical": true
+}
+E a matriz:
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+
+  "I": {
+    "status": "VERIFIED",
+    "evidence_ids": ["EVIDENCE-EXECUTION-001"]
+  },
+
+  "P": {
+    "status": "VERIFIED",
+    "evidence_ids": ["EVIDENCE-BYTE-COMPARISON-001"]
+  },
+
+  "N": {
+    "status": "VERIFIED",
+    "evidence_ids": ["EVIDENCE-NEGATIVE-001"]
+  },
+
+  "A": {
+    "status": "VERIFIED",
+    "evidence_ids": ["EVIDENCE-INDEPENDENT-001"]
+  },
+
+  "verified": true
+}
+Então:
+I ∧ P ∧ N ∧ A
+        │
+        ▼
+   verified = true
+        │
+        ▼
+CLAIM VERIFIED
+E isso encaixa diretamente no contrato FROZEN
+EVIDENCE_TYPE
++
+SOURCE
++
+RAW_ARTIFACT
++
+PROVENANCE
++
+CANONICALIZATION
++
+EVIDENCE_HASH
+        │
+        ▼
+XA-TRUST VERIFIER
+        │
+        ▼
+VERIFICATION_MATRIX
+        │
+        ▼
+VERIFICATION_RESULT
+Sem alterar a regra-mãe:
+A conclusão do verificador
+não altera a natureza da evidência original.
+Portanto, a evolução proposta não muda o contrato congelado. Ela explicita o vínculo que estava faltando:
+CLAIM
+  │
+  ├── I → evidence_ids
+  ├── P → evidence_ids
+  ├── N → evidence_ids
+  └── A → independent evidence_ids
+              │
+              ▼
+       ECM calculável
+              │
+              ▼
+       VERIFICATION_RESULT
+Isso torna o claim_id → I/P/N/A → evidence_id → artifact_hash estruturalmente verificável, em vez de depender de interpretação de relatórios.
 
 
 01  Load Contract
