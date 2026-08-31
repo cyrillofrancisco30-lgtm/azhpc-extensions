@@ -148,7 +148,19 @@ openapi: 3.1.0
         ├── IntegrityFailure
         └── VerificationFailure
 
+
 ---
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+  "predicate": "IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS",
+  "verification": {
+    "I": "VERIFIED",
+    "P": "VERIFIED",
+    "N": "VERIFIED",
+    "A": "VERIFIED"
+  },
+  "status": "VERIFIED"
+}
 
 ## 1. Estrutura do repositório
 
