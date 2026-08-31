@@ -467,6 +467,55 @@ DECLARATIVE
 
 Esse desenho é consistente com o núcleo semântico congelado do XA-TRUST: a API, o código, a execução, a evidência e o resultado de verificação permanecem entidades distintas; a propriedade VERIFIED só aparece como resultado derivado para a claim dentro do seu escopo.
 
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+  "predicate": "IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS",
+
+  "scope": {
+    "repository": "cyrillofrancisco30-lgtm/azhpc-extensions",
+    "commit_sha": "dddab15ba47d860a514cea2cace754a7e387456b",
+    "test_id": "test_rfc8785_jcs_conformance.py"
+  },
+
+  "verification": {
+    "I": "VERIFIED",
+    "P": "VERIFIED",
+    "N": "VERIFIED",
+    "A": "VERIFIED"
+  },
+
+  "status": "VERIFIED"
+}
+
+                 DECLARATIVE
+                     │
+              OpenAPI / Schema
+                     │
+                     ▼
+              IMPLEMENTATION
+                     │
+                     ▼
+                EXECUTION
+                     │
+                     ▼
+                 EVIDENCE
+                     │
+          ┌──────────┴──────────┐
+          ▼                     ▼
+     NEGATIVE TEST       INDEPENDENT TEST
+          │                     │
+          └──────────┬──────────┘
+                     ▼
+                ECM ENGINE
+                     │
+              I ∧ P ∧ N ∧ A
+                     │
+                     ▼
+              CLAIM VERIFIED
+                     │
+                     ▼
+            VERIFICATION_RESULT
+
 
 ```
 NSL-25-165432
