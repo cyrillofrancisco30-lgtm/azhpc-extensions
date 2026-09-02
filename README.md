@@ -73,7 +73,91 @@ CLAIM-RFC8785-JCS-CONFORMANCE-001
 
 ├─ LICENSE
 └─ pyproject.toml
+Sim. Esse é o pipeline normativo correto para a promoção da claim RFC8785.
 
+Eu o trataria como a cadeia canônica:
+
+EVIDENCE
+│
+▼
+RFC8785_TEST_EXECUTED
+│
+├── result_observed
+├── status == PASS
+├── artifact_integrity_valid
+└── execution_binding_valid
+│
+▼
+RFC8785_TEST_PASSED
+│
+├── conformance_scope_satisfied
+├── required_coverage_satisfied
+├── required_negative_cases_satisfied
+├── implementation_criteria_satisfied
+└── independent_verification_satisfied*
+│
+▼
+RFC8785_IMPLEMENTATION_CONFORMS
+
+Regras de promoção
+
+RFC8785_TEST_EXECUTED
+:=
+execution_proven
+
+RFC8785_TEST_PASSED
+:=
+RFC8785_TEST_EXECUTED
+∧ result_observed
+∧ status == PASS
+∧ artifact_integrity_valid
+∧ execution_binding_valid
+
+RFC8785_IMPLEMENTATION_CONFORMS
+:=
+RFC8785_TEST_PASSED
+∧ conformance_scope_satisfied
+∧ required_coverage_satisfied
+∧ required_negative_cases_satisfied
+∧ implementation_criteria_satisfied
+∧ independent_verification_satisfied*
+
+onde:
+
+independent_verification_satisfied*
+:=
+¬independent_verification_required
+∨ independent_verification_verified
+
+E a regra fail-closed:
+
+QUALQUER REQUISITO OBRIGATÓRIO
+= NOT_VERIFIED
+│
+▼
+PROMOÇÃO INTERROMPIDA
+│
+▼
+NOT_VERIFIED
+
+Portanto, a cadeia não permite salto:
+
+EVIDENCE
+╳
+├──────────────► RFC8785_TEST_PASSED
+╳
+└──────────────► RFC8785_IMPLEMENTATION_CONFORMS
+
+A promoção obrigatoriamente passa pelas etapas intermediárias e por seus próprios requisitos.
+
+Isso preserva integralmente os invariantes congelados:
+
+DECLARATION ≠ EVIDENCE
+DOCUMENTATION ≠ EXECUTION
+EXECUTION ≠ RESULT
+RESULT ≠ VERIFICATION
+DEPENDENCY ≠ STATE INHERITANCE
+PASS ≠ CONFORMANCE
 
 Sim. O conjunto está coerente, mas há uma correção estrutural necessária antes de tratá-lo como implementação normativa: os nomes dos predicados do grafo e os campos consumidos pelo Python precisam usar o mesmo modelo de representação.
 
