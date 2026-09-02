@@ -60,6 +60,237 @@ XA-trust/
 ├─ LICENSE
 └─ pyproject.toml
 
+
+Sim. O conjunto está coerente, mas há uma correção estrutural necessária antes de tratá-lo como implementação normativa: os nomes dos predicados do grafo e os campos consumidos pelo Python precisam usar o mesmo modelo de representação.
+
+Hoje existem duas linguagens misturadas:
+
+GRAFO:
+E / R / S_PASS / I_A / B_E
+
+PYTHON:
+test_executed.verified
+result_observed
+status
+artifact_integrity_valid
+execution_binding_valid
+
+Isso não é errado conceitualmente, mas para um motor determinístico deve existir uma normalização única.
+
+Forma canônica
+
+RFC8785_TEST_EXECUTED
+    │
+    ├── E = execution_proven
+    │
+    ▼
+RFC8785_TEST_PASSED
+    │
+    ├── E
+    ├── R
+    ├── S_PASS
+    ├── I_A
+    └── B_E
+    │
+    ▼
+RFC8785_IMPLEMENTATION_CONFORMS
+    │
+    ├── TEST_PASSED
+    ├── C_S
+    ├── C_V
+    ├── N_C
+    ├── I_C
+    └── A_V*
+
+A_V* deve ser interpretado como:
+
+A_V_REQUIRED == false
+        OR
+A_V == VERIFIED
+
+se a verificação independente for condicional.
+
+Regra de derivação
+
+TEST_EXECUTED
+    := E
+
+TEST_PASSED
+    := E ∧ R ∧ S_PASS ∧ I_A ∧ B_E
+
+IMPLEMENTATION_CONFORMS
+    := TEST_PASSED
+       ∧ C_S
+       ∧ C_V
+       ∧ N_C
+       ∧ I_C
+       ∧ A_V*
+
+Estado derivado
+
+O objeto de derivação que você propôs está correto conceitualmente:
+
+{
+  "derived_claim_id": "RFC8785_TEST_PASSED",
+  "derived_from": [
+    "RFC8785_TEST_EXECUTED",
+    "EVIDENCE-RESULT-001",
+    "EVIDENCE-ARTIFACT-INTEGRITY-001",
+    "EVIDENCE-EXECUTION-BINDING-001"
+  ],
+  "rule": "E && R && S_PASS && I_A && B_E",
+  "verified": true
+}
+
+Mas eu acrescentaria explicitamente a identidade da execução à derivação, porque B_E precisa apontar para um vínculo concreto:
+
+RUN_ID
+COMMIT_SHA
+WORKFLOW_ID
+JOB_ID
+STEP_ID
+TEST_ID
+RESULT_ARTIFACT_HASH
+
+Assim, o motor não apenas diz “o resultado está vinculado”, mas consegue demonstrar a que execução ele está vinculado.
+
+Invariante fundamental
+
+O conjunto final fica:
+
+STATE IS LOCAL TO CLAIM
+DEPENDENCIES ARE EXPLICIT
+PROMOTIONS ARE DERIVED
+EVIDENCE IS REFERENCED
+RESULTS ARE NOT EVIDENCE
+PROMOTION IS FAIL-CLOSED
+NO STATE INHERITANCE
+
+E a regra operacional:
+
+missing requirement
+        │
+        ▼
+NOT_VERIFIED
+
+nunca:
+
+missing requirement
+        │
+        ▼
+VERIFIED
+
+Portanto, o seu modelo já tem os três componentes necessários:
+
+┌──────────────────────────┐
+│ 1. CLAIM GRAPH           │
+│ dependencies + rules     │
+└────────────┬─────────────┘
+             ▼
+┌──────────────────────────┐
+│ 2. VERIFICATION MATRIX   │
+│ evidence + predicates    │
+└────────────┬─────────────┘
+             ▼
+┌──────────────────────────┐
+│ 3. PROMOTION ENGINE      │
+│ deterministic + fail-open│
+└────────────┬─────────────┘
+             ▼
+┌──────────────────────────┐
+│ DERIVED CLAIM            │
+│ rule + refs + state      │
+└──────────────────────────┘
+
+Com isso, VERIFIED deixa de ser um campo declarativo e passa a ser um estado derivado de uma função determinística sobre evidências e dependências explicitamente vinculadas.
+
+Sim. Essa formulação está fechada e internamente consistente.
+
+Eu a classificaria como o seguinte contrato lógico:
+
+XA-TRUST — RFC8785 CLAIM PROMOTION MODEL
+
+EXECUTION
+    │
+    ▼
+RFC8785_TEST_EXECUTED
+    │
+    │ REQUIRE:
+    │   + result_observed
+    │   + status == PASS
+    │   + artifact_integrity_valid
+    │   + execution_binding_valid
+    ▼
+RFC8785_TEST_PASSED
+    │
+    │ REQUIRE:
+    │   + conformance_scope_satisfied
+    │   + required_coverage_satisfied
+    │   + required_negative_cases_satisfied
+    │   + implementation_criteria_satisfied
+    │   + independent_verification_satisfied_if_required
+    ▼
+RFC8785_IMPLEMENTATION_CONFORMS
+
+Definições normativas
+
+RFC8785_TEST_EXECUTED
+    :=
+    execution_proven
+
+RFC8785_TEST_PASSED
+    :=
+    RFC8785_TEST_EXECUTED
+    ∧ result_observed
+    ∧ status == PASS
+    ∧ artifact_integrity_valid
+    ∧ execution_binding_valid
+
+RFC8785_IMPLEMENTATION_CONFORMS
+    :=
+    RFC8785_TEST_PASSED
+    ∧ conformance_scope_satisfied
+    ∧ required_coverage_satisfied
+    ∧ required_negative_cases_satisfied
+    ∧ implementation_criteria_satisfied
+    ∧ independent_verification_satisfied_if_required
+
+Regra fundamental
+
+CLAIM_A VERIFIED
+    ≠
+CLAIM_B VERIFIED
+
+Uma relação:
+
+CLAIM_A
+    ── prerequisite ──►
+CLAIM_B
+
+significa dependência lógica, não herança de estado.
+
+Consequentemente:
+
+RFC8785_TEST_EXECUTED
+        ╳──► RFC8785_TEST_PASSED
+
+e:
+
+RFC8785_TEST_PASSED
+        ╳──► RFC8785_IMPLEMENTATION_CONFORMS
+
+A primeira promoção exige resultado observado + PASS + integridade + binding.
+
+A segunda exige os requisitos completos de conformidade, além do PASS.
+
+Isso também mantém intacto o princípio XA-TRUST:
+
+DEPENDENCY ≠ STATE INHERITANCE
+EXECUTION ≠ RESULT
+RESULT ≠ CONFORMANCE
+PASS ≠ CONFORMANCE
+
+E, portanto, um PASS concreto pode sustentar RFC8785_TEST_PASSED dentro do escopo daquele teste e daquela execução, sem permitir que o sistema transforme automaticamente essa evidência em RFC8785_IMPLEMENTATION_CONFORMS.
 xa-trust-cvl-openapi.yaml
 
 openapi: 3.1.0
