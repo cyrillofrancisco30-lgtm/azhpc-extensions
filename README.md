@@ -56,6 +56,20 @@ XA-trust/
 ├─ LICENSE
 └─ pyproject.toml
 
+CLAIM-RFC8785-JCS-CONFORMANCE-001
+        │
+        ├── claim declared in README        → ESTABLISHED
+        ├── predicate defined               → ESTABLISHED
+        ├── scope identified               → ESTABLISHED
+        ├── test_id identified             → ESTABLISHED
+        ├── ECM model described            → ESTABLISHED
+        │
+        ├── concrete run_id                 → MISSING
+        ├── ProducedBytes                   → MISSING
+        ├── ExpectedBytes                   → MISSING
+        ├── concrete execution binding      → INCOMPLETE
+        └── independently reconstructed
+            PASS                            → NOT_ESTABLISHED
 
 ├─ LICENSE
 └─ pyproject.toml
