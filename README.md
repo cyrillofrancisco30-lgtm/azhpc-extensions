@@ -71,6 +71,87 @@ CLAIM-RFC8785-JCS-CONFORMANCE-001
         └── independently reconstructed
             PASS                            → NOT_ESTABLISHED
 
+
+Exatamente. Essa é uma formulação fail-closed consistente com o modelo XA-TRUST.
+
+A leitura normativa é:
+
+CONCRETE EXECUTION
+        ↓
+CONCRETE BYTE EVIDENCE
+        ↓
+BYTE-FOR-BYTE RESULT
+        ↓
+NEGATIVE PROPERTY EVIDENCE
+        ↓
+INDEPENDENT VERIFICATION
+        ↓
+      I ∧ P ∧ N ∧ A
+        ↓
+DETERMINISTIC PROMOTION
+        ↓
+    CLAIM = VERIFIED
+
+Onde:
+
+I — Implementation: a implementação correspondente ao COMMIT_SHA foi realmente executada.
+
+P — Positive Evidence: a execução produziu evidência concreta, incluindo ProducedBytes e ExpectedBytes, com ProducedBytes == ExpectedBytes.
+
+N — Negative Evidence: casos de alteração/tampering ou violações relevantes foram testados e produziram o comportamento esperado.
+
+A — Assurance / Independent Verification: um verificador independente consegue validar/reproduzir a conclusão a partir das evidências vinculadas.
+
+
+A regra decisória pode ser expressa como:
+
+VERIFIED(C)
+=
+I(C)
+∧ P(C)
+∧ N(C)
+∧ A(C)
+∧ BINDING(C)
+∧ DETERMINISTIC(C)
+
+E, crucialmente:
+
+¬I → NOT_VERIFIED
+¬P → NOT_VERIFIED
+¬N → NOT_VERIFIED
+¬A → NOT_VERIFIED
+¬BINDING → NOT_VERIFIED
+
+Assim, nenhuma etapa isolada promove o claim.
+
+Nem:
+
+pytest PASS
+
+nem:
+
+GitHub Actions SUCCESS
+
+nem:
+
+ProducedBytes == ExpectedBytes
+
+nem:
+
+status = VERIFIED
+
+é suficiente sozinho.
+
+O VERIFIED é o estado derivado final, produzido deterministicamente pela satisfação conjunta das condições exigidas. Isso preserva exatamente:
+
+EVIDENCE ≠ RESULT
+RESULT ≠ VERIFICATION
+VERIFICATION ≠ CLAIM
+CLAIM = VERIFIED
+      somente quando
+      a regra de promoção é satisfeita
+
+
 ├─ LICENSE
 └─ pyproject.toml
 Sim. Esse é o pipeline normativo correto para a promoção da claim RFC8785.
