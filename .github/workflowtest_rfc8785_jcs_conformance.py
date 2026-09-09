@@ -111,7 +111,7 @@ Por exemplo:
 API_RESPONSE_OBSERVED ↓ RUN_ID_OBSERVED ↓ JOB_RUN_OBSERVED ↓ RESULT_OBSERVED ↓ INDEPENDENT_VERIFICATION ↓ VERIFIED_CLAIM 
 
 Cada seta precisa de sua própria regra/evidência.
-
+6
 Forma formal 
 
 Podemos representar o pipeline como:
@@ -132,8 +132,8 @@ CLAIM + EVIDENCE_SET + CLAIM_CONTRACT + KERNEL_VERSION + APPLICABLE_TIME/STATE
 
 Portanto:
 
-O XA-TRUST não transforma evidência em confiança por propagação. Ele deriva estados verificáveis por regras explícitas, claim-scoped e determinísticas.
-
+O XA-TRUST não transforma evidência em confiança por propagação. [[[ Ele deriva estados verificáveis por regras explícitas, claim-scoped e determinísticas.
+                                                                   ]] show 
 Isso também fecha a conexão com a tríade que você acabou de estabelecer:
 
 IDENTITY ≠ EXECUTION EXECUTION ≠ RESULT RESULT ≠ VERIFICATION 
@@ -141,4 +141,65 @@ IDENTITY ≠ EXECUTION EXECUTION ≠ RESULT RESULT ≠ VERIFICATION
 e com a regra maior:
 
 EVIDENCE ≠ DECISION TRUST ≠ INHERITANCE VERIFIED ≠ GLOBAL PROPERTY 
+Exatamente. A análise está consistente e chega a um ponto ainda mais forte: há duas fronteiras independentes de não promoção.
+
+REPOSITORY / ARTIFACT │ ▼ FILE_CONTENT_OBSERVED │ ▼ DECLARATIVE_WORKFLOW_CONFIGURATION │ ┌──────────┴──────────┐ ▼ ▼ CONFIGURATION CLAIMS RFC8785/JCS CLAIM │ │ X X │ │ ▼ ▼ WORKFLOW_EXECUTION RFC8785_TEST_EXECUTION 1. Fronteira temporal/operacional WORKFLOW_DISPATCH_CONFIGURED ↛ WORKFLOW_DISPATCH_TRIGGERED ↛ WORKFLOW_RUN_OBSERVED ↛ JOB_EXECUTION_OBSERVED ↛ STEP_EXECUTION_OBSERVED ↛ COMMAND_EXECUTED 
+
+workflow_dispatch é uma capacidade declarada de disparo manual. Não é um evento histórico.
+
+2. Fronteira semântica 
+
+Mesmo que amanhã apareça um run_id, ainda seria necessário verificar o que realmente foi executado:
+
+RUN_ID_OBSERVED ↓ WORKFLOW_IDENTITY_BOUND ↓ JOB_IDENTITY_BOUND ↓ STEP_IDENTITY_BOUND ↓ COMMAND_OBSERVED ↓ COMMAND_SEMANTICS 
+
+Neste caso, o comando observado teria de corresponder a:
+
+echo "Hello ..." 
+
+e não a um teste RFC8785/JCS.
+
+Logo:
+
+RUN_ID_OBSERVED ↛ RFC8785_TEST_EXECUTED 3. A extensão .py também não deve decidir a semântica 
+
+Outro ponto útil para o XA-TRUST:
+
+FILENAME_EXTENSION ↛ EXECUTION_LANGUAGE ↛ EXECUTION_EVENT 
+
+O arquivo se chama:
+
+workflowtest_rfc8785_jcs_conformance.py 
+
+mas o conteúdo apresentado é uma configuração declarativa YAML.
+
+Portanto, o Kernel deve analisar conteúdo + estrutura + contexto + identidade do artefato, e não inferir semântica operacional a partir do nome.
+
+4. Claim Contract específico 
+
+Para o claim que você está investigando, eu definiria algo assim:
+
+CLAIM: RFC8785_TEST_EXECUTED REQUIRED: ✓ concrete workflow identity ✓ concrete run_id ✓ run observed ✓ commit binding ✓ job binding ✓ step binding ✓ command execution observed ✓ command semantically corresponds to RFC8785/JCS test ✓ execution timestamp ✓ artifact integrity ✓ execution binding 
+
+E para:
+
+CLAIM: RFC8785_TEST_PASSED 
+
+adicionaria:
+
+RFC8785_TEST_EXECUTED + TEST_RESULT_OBSERVED + status == PASS + artifact_integrity_valid + execution_binding_valid + independent_verification ↓ RFC8785_TEST_PASSED Resultado atual 
+
+Com somente esse artefato, o ledger deveria registrar algo próximo de:
+
+{ "claim_id": "RFC8785_TEST_EXECUTED", "decision": "NOT_VERIFIED", "reason": "REQUIRED_EXECUTION_EVIDENCE_NOT_OBSERVED", "evidence_scope": [ "FILE_CONTENT_OBSERVED", "DECLARATIVE_WORKFLOW_CONFIGURATION" ], "non_promotion": [ "WORKFLOW_CONFIGURATION ↛ WORKFLOW_EXECUTION", "COMMAND_DECLARED ↛ COMMAND_EXECUTED", "FILENAME ↛ RFC8785_TEST_EXECUTION" ] } 
+
+E isso é particularmente importante: NOT_VERIFIED não significa que o teste nunca foi executado. Significa somente que a evidência disponível e o contrato aplicável não permitem verificar a execução.
+
+Essa distinção mantém intacta a regra:
+
+ABSENCE_OF_OBSERVED_EXECUTION ≠ PROOF_OF_NON_EXECUTION 
+
+É exatamente o tipo de caso em que o XA-TRUST demonstra sua principal propriedade: não confundir descrição de uma operação com ocorrência da operação, nem identidade nominal do artefato com o evento que ele supostamente representaria.
+
+
 
