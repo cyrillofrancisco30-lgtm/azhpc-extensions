@@ -36,7 +36,7 @@ O repositório json-schema-org/json-schema-spec é de fato o repositório públi
 
 O que fazer agora 
 
-Eu montaria o Evidence Graph deste repositório assim:
+Eu
 
 SCREENSHOT │ ▼ REPOSITORY_UI_OBSERVED │ ▼ REPOSITORY_IDENTITY │ ├── json-schema-org/json-schema-spec │ ├── branch/ref observada │ └── commit/ref temporal, se disponível │ ▼ ARTIFACT_IDENTITY │ ├── .github/workflows/ci.yml ├── .github/workflows/minimum-open-time.yml └── vitest-schema.config.js │ ▼ CONFIGURATION_EVIDENCE │ ├── workflow definition ├── triggers ├── jobs ├── runners ├── steps ├── commands └── test configuration │ └──────────────X──────────────► EXECUTION_EVIDENCE Depois, procurar a fronteira crítica 
 
@@ -81,4 +81,64 @@ Eu seguiria exatamente nesta ordem:
 O ponto decisivo agora é o passo 5/6: descobrir se existe um workflow_run concreto e identificável.
 
 Se houver run_id, aí podemos abrir uma segunda camada forense e verificar run → job → step → comando → resultado → commit, sem jamais inferir execução apenas a partir dos arquivos YAML.
+
+Sim. Essa sequência pode ser tratada como o pipeline normativo central do XA-TRUST v2.0.
+
+01 RAW EVIDENCE ↓ 02 SEMANTIC TYPING ↓ 03 EVIDENCE GRAPH ↓ 04 BINDING + DEPENDENCY ANALYSIS ↓ 05 CONSISTENCY ANALYSIS ↓ 06 FAILURE CONTAINMENT ↓ 07 PATH-LOCAL VERIFICATION ↓ 08 GLOBAL AGGREGATION ↓ 09 VERSIONED VERIFICATION LEDGER 
+
+A leitura normativa de cada estágio é:
+
+Etapa Função Não permite automaticamente 01 RAW EVIDENCE preservar a observação original claim verificado 02 SEMANTIC TYPING determinar tipo e escopo semântico promoção de estado 03 EVIDENCE GRAPH estruturar nós, relações e evidências validade automática das relações 04 BINDING + DEPENDENCY validar identidade, recursos, tempo e dependências verificação final 05 CONSISTENCY detectar incompatibilidades/conflitos declarar falsidade universal 06 FAILURE CONTAINMENT conter efeitos de evidências contraditórias contaminar caminhos independentes 07 PATH-LOCAL VERIFICATION avaliar cada caminho isoladamente decisão global automática 08 GLOBAL AGGREGATION combinar caminhos quando o contrato exigir agregação implícita 09 VERSIONED LEDGER registrar a decisão de forma versionada criar evidência retroativamente Regra fundamental 
+
+O pipeline não deve ser entendido como uma cadeia em que o estado simplesmente “sobe”:
+
+RAW ↓ TYPED ↓ GRAPH ↓ BOUND ↓ CONSISTENT ↓ VERIFIED 
+
+Isso violaria o princípio de não promoção.
+
+O correto é:
+
+EVIDENCE ↓ EVALUATION ↓ DERIVATION RULE ↓ STATE 
+
+Cada transição precisa ser autorizada pelo Claim Contract e avaliada pelo XA Kernel.
+
+Em particular RUN_ID_OBSERVED ↓ 
+
+deve entrar no pipeline como evidência de identidade de execução, não como prova automática de execução concluída.
+
+Por exemplo:
+
+API_RESPONSE_OBSERVED ↓ RUN_ID_OBSERVED ↓ JOB_RUN_OBSERVED ↓ RESULT_OBSERVED ↓ INDEPENDENT_VERIFICATION ↓ VERIFIED_CLAIM 
+
+Cada seta precisa de sua própria regra/evidência.
+
+Forma formal 
+
+Podemos representar o pipeline como:
+
+P(E, C, K, T) = L( A( V( F( Cn( B( G( T( R(E) ) ) ) ) ) ) ) ) 
+
+onde, conceitualmente:
+
+R = Raw Evidence T = Semantic Typing G = Evidence Graph B = Binding/Dependency Analysis Cn = Consistency Analysis F = Failure Containment V = Path-Local Verification A = Global Aggregation L = Versioned Ledger 
+
+E a propriedade essencial:
+
+FINAL_DECISION ≠ PROPERTY_OF_EVIDENCE 
+
+Ela é uma função de:
+
+CLAIM + EVIDENCE_SET + CLAIM_CONTRACT + KERNEL_VERSION + APPLICABLE_TIME/STATE 
+
+Portanto:
+
+O XA-TRUST não transforma evidência em confiança por propagação. Ele deriva estados verificáveis por regras explícitas, claim-scoped e determinísticas.
+
+Isso também fecha a conexão com a tríade que você acabou de estabelecer:
+
+IDENTITY ≠ EXECUTION EXECUTION ≠ RESULT RESULT ≠ VERIFICATION 
+
+e com a regra maior:
+
+EVIDENCE ≠ DECISION TRUST ≠ INHERITANCE VERIFIED ≠ GLOBAL PROPERTY 
 
