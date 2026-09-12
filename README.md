@@ -55,6 +55,53 @@ XA-trust/
 ├─ README.md
 ├─ LICENSE
 └─ pyproject.toml
+Exatamente. Com a configuração confirmada + execução efetivamente observada, já podemos registrar uma EXECUTION_EVIDENCE = OBSERVED/ESTABLISHED para o escopo específico da coleta.
+
+A distinção correta é:
+
+CONFIGURATION_EVIDENCE
+        +
+EXECUTION OUTPUT OBSERVED
+        ↓
+EXECUTION_EVIDENCE = OBSERVED/ESTABLISHED
+
+No seu caso:
+
+evidence.yaml
+        ↓
+CONFIGURATION_EVIDENCE = ESTABLISHED
+
+evidence collect
+        ↓
+collector output
+        ↓
+5 artifacts collected
+        ↓
+COLLECTION_EXECUTION = ESTABLISHED
+        ↓
+EXECUTION_EVIDENCE = OBSERVED/ESTABLISHED
+
+Isso não exige esperar a integridade, proveniência ou verificação independente para reconhecer que existe uma evidência de execução. Essas são propriedades posteriores da qualificação/verificação dessa evidência.
+
+Então o estado fica:
+
+CONFIGURATION_EVIDENCE       = ESTABLISHED
+EXECUTION_EVIDENCE           = OBSERVED/ESTABLISHED
+COLLECTION_EXECUTION         = ESTABLISHED
+
+INTEGRITY                    = PENDING RESOLUTION
+PROVENANCE/BINDING           = PENDING RESOLUTION
+INDEPENDENT_VERIFICATION     = NOT_PERFORMED
+DETERMINISTIC_PROMOTION      = NOT_PERFORMED
+VERIFIED                     = NOT_PROMOTABLE
+
+E isso respeita precisamente:
+
+EXECUTION_EVIDENCE ≠ VERIFIED
+
+A evidência de execução já existe; 
+
+
 
 CLAIM-RFC8785-JCS-CONFORMANCE-001
         │
