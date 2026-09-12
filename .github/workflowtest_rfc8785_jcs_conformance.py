@@ -1,3 +1,39 @@
+{
+  "claim_id": "RFC8785_TEST_EXECUTED",
+  "decision": "NOT_VERIFIED",
+  "reason": "REQUIRED_EXECUTION_EVIDENCE_NOT_OBSERVED",
+  "observed_scope": [
+    "FILE_CONTENT_OBSERVED",
+    "DECLARATIVE_WORKFLOW_CONFIGURATION"
+  ],
+  "non_promotion": [
+    "WORKFLOW_CONFIGURATION ↛ WORKFLOW_EXECUTION",
+    "COMMAND_DECLARED ↛ COMMAND_EXECUTED",
+    "FILENAME ↛ RFC8785_TEST_EXECUTION"
+  ]
+}
+
+  "claim_id": "RFC8785_TEST_EXECUTED",
+  "claim_scope": "SPECIFIC_TEST_EXECUTION",
+  "decision": "NOT_VERIFIED",
+  "reason": "REQUIRED_EXECUTION_EVIDENCE_NOT_OBSERVED",
+  "observed_scope": [
+    "FILE_CONTENT_OBSERVED",
+    "DECLARATIVE_WORKFLOW_CONFIGURATION"
+  ],
+  "verification_basis": {
+    "workflow_run_observed": false,
+    "job_execution_observed": false,
+    "step_execution_observed": false,
+    "command_execution_observed": false,
+    "execution_result_observed": false
+  },
+  "non_promotion": [
+    "WORKFLOW_CONFIGURATION ↛ WORKFLOW_EXECUTION",
+    "COMMAND_DECLARED ↛ COMMAND_EXECUTED",
+    "FILENAME ↛ RFC8785_TEST_EXECUTION"
+  ]
+}
 # This is a basic workflow that is manually triggered
 
 name: Manual workflow
