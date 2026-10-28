@@ -583,6 +583,97 @@ openapi: 3.1.0
 
 └── components
 
+
+
+Esse `package.json` (ou manifesto equivalente de extensão) acrescenta uma camada importante à análise ECM: ele descreve a identidade, as capacidades declaradas e os requisitos operacionais do Elephant-Goldfish Model (EGM). Ele não comprova, por si só, que essas capacidades foram executadas.
+
+### 1\. Classificação ECM do manifesto
+
+Artefato
+
+Manifesto de produto
+
+Repositório declarado: `google/elephant-goldfish-model`
+
+Estado sugerido: `PRODUCT_MANIFEST_DECLARATION_OBSERVED`
+
+O JSON fornecido declara metadados do produto, recursos, links de suporte e requisitos de execução. A análise ainda não confirma que o conteúdo corresponde ao arquivo atualmente publicado no repositório.
+
+### 2\. O que o manifesto declara
+
+| Campo                                      | Interpretação técnica                                                                   | Limite probatório                                                            |
+| ------------------------------------------ | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| name, version                              | Identidade egm, versão 0.1.0                                                            | Não comprova versão instalada ou release publicado                           |
+| repository                                 | URL do repositório GitHub                                                               | Não prova vínculo criptográfico entre o manifesto e o repositório            |
+| skills: "./skills/"                        | Diretório declarado para skills                                                         | Não comprova que todas as skills existem ou funcionam                        |
+| requires_local_executor: true              | Declara requisito de executor local                                                     | Não identifica qual executor foi utilizado nem prova uma execução            |
+| capabilities                               | Redação de especificações, revisão de designs e análise de divergência de implementação | Capacidades declaradas, não resultados verificados                           |
+| Uses your host's models and permissions    | Declara dependência dos modelos e permissões do ambiente hospedeiro                     | Não especifica, isoladamente, todos os fluxos de dados ou controles efetivos |
+| Reviews require isolated subagents         | Declara requisito arquitetural para revisão                                             | Não comprova isolamento real nem execução de subagentes                      |
+| cloud support remains partial              | Declara suporte parcial em nuvem                                                        | Não define, por si só, quais operações funcionam em cada ambiente            |
+| Not an officially supported Google product | Ressalva explícita de suporte oficial                                                   | Deve ser preservada ao descrever o produto                                   |
+| privacyPolicyURL e termsOfServiceURL       | Referências declaradas a documentos de privacidade e licença                            | Não prova conformidade efetiva com esses documentos                          |
+
+### 3\. Ponto central para o XA-TRUST
+
+O campo mais relevante é:
+
+```json
+{
+  "requires_local_executor": true
+}
+```
+
+Ele indica que o manifesto declara a necessidade de um executor local. Isso é compatível com a distinção entre especificação documental e execução técnica, mas não prova que o executor tenha sido iniciado.
+
+Da mesma forma, a declaração de revisão com subagentes isolados não comprova que a revisão ocorreu, que os agentes estavam efetivamente isolados ou que suas conclusões foram verificadas independentemente.
+
+O ciclo probatório recomendado continua sendo:
+
+E1 — Manifesto observado
+
+Identidade, versão e capacidades declaradas
+
+E2 — Implementação identificada
+
+Commit, arquivos e dependências vinculados
+
+E3 — Execução comprovada
+
+Executor, run ID, logs e resultado
+
+E4 — Verificação independente
+
+Integridade, proveniência e reprodução dos resultados
+
+Esta sequência é um modelo proposto para o ECM, não uma afirmação de que o EGM implemente esses quatro níveis.
+
+### 4\. Registro ECM sugerido
+
+```json
+{
+  "claim_id": "ECM-EGM-MANIFEST-001",
+  "claim_type": "PRODUCT_CAPABILITY_MANIFEST",
+  "status": "PRODUCT_MANIFEST_DECLARATION_OBSERVED",
+  "artifact": "package.json",
+  "declared_name": "egm",
+  "declared_version": "0.1.0",
+  "declared_repository": "https://github.com/google/elephant-goldfish-model",
+  "local_executor_required": true,
+  "isolated_subagents_declared_required": true,
+  "cloud_support_declared": "partial",
+  "official_google_support_claimed": false,
+  "source_commit_bound": false,
+  "runtime_execution_verified": false,
+  "subagent_isolation_verified": false,
+  "privacy_behavior_independently_verified": false,
+  "promotion_authorized": false
+}
+```
+
+Conclusão: o manifesto é evidência documental das propriedades e limitações que o produto declara. Não é prova de instalação, execução, isolamento, privacidad
+
+
     ├── schemas
 
     │   ├── DEP
