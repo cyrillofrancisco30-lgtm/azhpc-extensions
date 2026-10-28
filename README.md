@@ -585,7 +585,7 @@ openapi: 3.1.0
 
 
 
-Esse `package.json` (ou manifesto equivalente de extensão) acrescenta uma camada importante à análise ECM: ele descreve a identidade, as capacidades declaradas e os requisitos operacionais do Elephant-Goldfish Model (EGM). Ele não comprova, por si só, que essas capacidades foram executadas.
+
 
 ### 1\. Classificação ECM do manifesto
 
@@ -597,7 +597,7 @@ Repositório declarado: `google/elephant-goldfish-model`
 
 Estado sugerido: `PRODUCT_MANIFEST_DECLARATION_OBSERVED`
 
-O JSON fornecido declara metadados do produto, recursos, links de suporte e requisitos de execução. A análise ainda não confirma que o conteúdo corresponde ao arquivo atualmente publicado no repositório.
+O JSON fornecido declara metadados do produto, recursos, links de suporte e requisitos 
 
 ### 2\. O que o manifesto declara
 
@@ -671,7 +671,7 @@ Esta sequência é um modelo proposto para o ECM, não uma afirmação de que o 
 }
 ```
 
-Conclusão: o manifesto é evidência documental das propriedades e limitações que o produto declara. Não é prova de instalação, execução, isolamento, privacidad
+Conclusão: o manifesto é evidência documental das propriedades evidência de execução e verificação determinística. 
 
 
     ├── schemas
