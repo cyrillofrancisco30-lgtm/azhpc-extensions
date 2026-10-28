@@ -199,6 +199,41 @@ CLAIM = VERIFIED
       a regra de promoção é satisfeita
 
 
+. Matriz de verificação I ∧ P ∧ N ∧ A
+Para evitar uma promoção indevida, cada dimensão precisa ter critérios explícitos. Proponho o seguinte significado operacional para esta alegação:
+Dimensão Critério de aceitação
+I — Integrity Hashes dos arquivos e resultados correspondem aos artefatos identificados
+P — Provenance Repositório, commit, workflow, executor e origem dos resultados estão vinculados
+N — Normative conformance Implementação satisfaz os requisitos aplicáveis da RFC 8785 e os vetores de teste
+
+
+{
+  "claim_id": "CLAIM-RFC8785-JCS-CONFORMANCE-001",
+  "predicate": "IMPLEMENTATION_CONFORMS_TO_RFC8785_JCS",
+  "status": "CONFORMANCE_CLAIM_PENDING_EVIDENCE",
+  "verification": {
+    "I": "PENDING",
+    "P": "PENDING",
+    "N": "PENDING",
+    "A": "PENDING"
+  },
+  "required_evidence": {
+    "source_commit": true,
+    "implementation_artifact_hash": true,
+    "normative_test_vectors": true,
+    "execution_metadata": true,
+    "test_results": true,
+    "independent_verification_report": true
+  },
+  "promotion_policy": {
+    "operator": "AND",
+    "required_states": ["VERIFIED"],
+    "on_missing_evidence": "DENY",
+    "on_conflicting_evidence": "DENY"
+  },
+  "promotion_authorized": false
+}
+
 ├─ LICENSE
 └─ pyproject.toml
 Sim. Esse é o pipeline normativo correto para a promoção da claim RFC8785.
